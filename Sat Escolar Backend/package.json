@@ -1,0 +1,42 @@
+{
+  "name": "sat-escolar-backend",
+  "version": "2.0.0",
+  "description": "Backend completo para SAT Escolar con motor de análisis de riesgo",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "node --test src/services/riesgoEstudianteService.test.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:pg:init": "node src/db/initPostgres.js",
+    "db:pg:docentes": "node src/db/seedDocenteCredentials.js",
+    "db:pg:admin": "node src/db/migrateIdentityAdmin.js",
+    "db:pg:director": "node src/db/seedDirector.js",
+    "db:pg:riesgo": "node src/db/migrateRiesgoConductaAlertas.js",
+    "db:pg:chat": "node src/db/migrateMensajesAnonimos.js",
+    "db:pg:bimestres": "node src/db/migrateBimestres.js",
+    "db:pg:notas": "node src/db/migrateNotasSimples.js",
+    "db:pg:observaciones": "node src/db/migrateObservacionesBimestre.js",
+    "db:pg:campos": "node src/db/migrateCamposNota.js",
+    "db:pg:demo": "node src/db/seedDemo.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "docxtemplater": "^3.69.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "8.6.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.3.0",
+    "nodemailer": "^9.0.5",
+    "openai": "^7.7.0",
+    "pg": "^8.21.0",
+    "pizzip": "^3.2.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

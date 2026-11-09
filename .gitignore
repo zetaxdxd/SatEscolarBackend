@@ -1,4 +1,25 @@
+# Dependencias
 node_modules/
+
+# Entorno y secretos
 .env
-database/*.db
-database/*.db-journal
+.env.*
+!.env.example
+Sat Escolar Backend/.env
+Sat Escolar Backend/.env.*
+!Sat Escolar Backend/.env.example
+!Sat Escolar Backend/.env.cloud.example
+
+# Datos locales
+Sat Escolar Backend/database/
+*.db
+*.sqlite
+
+# Respaldos de BD (contienen datos reales, nunca subir)
+backups/
+*.dump
+
+# Sistema / editor
+.DS_Store
+*.log
+.~*

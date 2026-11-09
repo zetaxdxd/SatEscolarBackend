@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sat-escolar-backend
+    env: node
+    rootDir: Sat Escolar Backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # La base de datos de Render está SUSPENDIDA por ahora.
+      # Reactivala en el panel de Render y pega aquí su DATABASE_URL interna:
+      # postgresql://sat_escolar_user:...@dpg-...render.com/sat_escolar_9in0
+      - key: DATABASE_URL
+        value: ""
+      - key: PGSSL
+        value: "true"
+      - key: JWT_SECRET
+        value: sat_escolar_secret_2025
+      # Si usas correo, agrega también: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
+
+# Notas:
+# - El backend (Sat Escolar Backend) ya sirve el frontend estático
+#   (Sat Escolar Frontend/) vía express.static, por lo que no hace falta
+#   un servicio separado de frontend en Render.
+# - La DB de Render está suspendida: el despliegue subirá, pero el login y
+#   los datos no funcionarán hasta que la reactives. Mientras tanto, en local
+#   funciona en http://127.0.0.1:3100 con el seed completo ya cargado.

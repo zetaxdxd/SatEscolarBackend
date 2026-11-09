@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT Escolar | Psicopedagogia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul: #063b91;
+      --azul-oscuro: #03275f;
+      --azul-claro: #0d63d8;
+      --dorado: #f2b51d;
+      --blanco: #ffffff;
+      --gris: #6d7b91;
+      --borde: #dce5f2;
+      --fondo: #f5f8fc;
+      --ok: #1f9d6f;
+      --warn: #d4483f;
+      --radius: 16px;
+      --shadow: 0 5px 20px rgba(0,35,90,.045);
+    }
+
+    body {
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      background: var(--fondo);
+      color: #102a56;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app { display: flex; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 275px; height: 100vh;
+      background: linear-gradient(180deg, var(--azul-oscuro) 0%, #063579 60%, #04265b 100%);
+      color: white; padding: 25px 20px 12px;
+      display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0;
+      overflow: hidden;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; padding: 4px 8px 25px; }
+    .logo-img { width: 50px; height: 55px; object-fit: contain; flex-shrink: 0; }
+    .logo-text h1 { font-size: 1.5rem; font-weight: bold; line-height: 1.1; }
+    .logo-text span { display: block; font-size: 0.65rem; letter-spacing: 0.5px; opacity: 0.9; margin-top: 2px; }
+
+    .user-card {
+      background: linear-gradient(135deg, #0033a0, #002266);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px; padding: 16px 20px;
+      display: flex; align-items: center; gap: 15px;
+      margin: 10px 0 27px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .avatar-container {
+      width: 54px; height: 54px; background-color: #ffffff;
+      border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      flex-shrink: 0;
+    }
+    .avatar-icon { width: 28px; height: 28px; fill: #0033a0; }
+    .user-info {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: 4px; color: #ffffff;
+    }
+    .user-info .greeting { font-size: 0.9rem; opacity: 0.85; }
+    .user-info .name { font-size: 1.1rem; font-weight: bold; }
+    .user-badge {
+      background-color: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff; padding: 3px 12px; border-radius: 12px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.5px; margin-top: 2px;
+    }
+    .menu-title {
+      color: #8faedc; font-size: 11px; font-weight: 700;
+      margin: 0 10px 10px; letter-spacing: 1px;
+    }
+    .menu { display: flex; flex-direction: column; gap: 7px; flex: 1 1 0; min-height: 0; height: 0; overflow-y: auto; overflow-x: hidden; padding-right: 4px; margin-right: -4px; }
+    .menu-item {
+      display: flex; align-items: center; gap: 13px; padding: 12px 13px;
+      color: #dce8fa; text-decoration: none; border-radius: 11px;
+      font-size: 14px; cursor: pointer; transition: .2s;
+    }
+    .menu-item:hover { background: rgba(255,255,255,.09); color: white; }
+    .menu-item.active {
+      background: linear-gradient(90deg, #0c65d9, #084aa7); color: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,.12);
+    }
+    .icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.08); flex-shrink: 0;
+    }
+    .menu-item.active .icon { background: white; color: var(--azul); }
+    .menu-item .icon svg { width: 16px; height: 16px; }
+    .menu-item.active .icon svg path,
+    .menu-item.active .icon svg circle,
+    .menu-item.active .icon svg rect { stroke: var(--azul); }
+    .menu-item .icon svg path,
+    .menu-item .icon svg circle,
+    .menu-item .icon svg rect { stroke: #dce8fa; }
+    .badge {
+      margin-left: auto; font-size: 11px; font-weight: 600;
+      color: var(--dorado); background: rgba(242,181,29,.16);
+      padding: 2px 8px; border-radius: 20px; min-width: 20px; text-align: center;
+    }
+    .logout {
+      margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12);
+      flex-shrink: 0; margin-bottom: 16px;
+    }
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 28px 12px 14px;
+      background-color: #21264b;
+      color: #f7b2bd;
+      border: 1px solid #753949;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      width: 100%;
+      justify-content: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .logout-btn .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      background-color: #432d4b;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .logout-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* ── MAIN ── */
+    .main { margin-left: 275px; width: calc(100% - 275px); padding: 32px; }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 27px; }
+    .title h2 { font-size: 27px; color: var(--azul-oscuro); font-weight: 800; }
+    .title p { color: var(--gris); font-size: 14px; margin-top: 5px; }
+    .notification {
+      width: 45px; height: 45px; background: white; border: 1px solid var(--borde);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      color: var(--azul); box-shadow: var(--shadow); cursor: pointer; position: relative;
+    }
+    .notification svg { width: 18px; height: 18px; }
+    .notification .dot {
+      position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--warn); border: 2px solid white;
+    }
+
+    /* ── LAYOUT ── */
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 275px; gap: 25px; }
+
+    /* ── STAT CARDS ── */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 17px; margin-bottom: 30px; }
+    .stat, .stat-card {
+      background: var(--blanco); border: 1px solid var(--borde); border-radius: var(--radius);
+      padding: 19px; min-height: 145px; box-shadow: var(--shadow);
+      transition: all .2s ease;
+    }
+    .stat-card:hover { border-color: var(--azul-claro); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6,59,145,.12); }
+    .stat-head, .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .stat-title, .stat-label { font-size: 10.5px; font-weight: 800; color: #65738a; letter-spacing: .8px; text-transform: uppercase; }
+    .stat-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .2s ease;
+    }
+    .stat-card:hover .stat-icon { transform: scale(1.08); }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-icon.blue { background: #edf4ff; color: var(--azul-claro); }
+    .stat-icon.green { background: #e3f7ee; color: var(--ok); }
+    .stat-icon.red { background: #fdeceb; color: var(--warn); }
+    .stat-icon.dorado { background: rgba(242,181,29,.12); color: #b08a14; }
+    .stat-icon.purple { background: #f3e8ff; color: #7c3aed; }
+    .stat-number, .stat-value { font-size: 34px; font-weight: 800; color: var(--azul-oscuro); line-height: 1; }
+    .stat-desc, .stat-sub { color: var(--gris); font-size: 12px; margin-top: 6px; }
+
+    /* ── PANEL DERECHO: items de alerta pendiente ── */
+    .pending-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 11px 12px; border-radius: 12px;
+      background: var(--fondo); border: 1px solid var(--borde);
+      margin-bottom: 8px; cursor: pointer; transition: all .15s ease;
+    }
+    .pending-item:hover { border-color: var(--azul-claro); box-shadow: 0 3px 10px rgba(6,59,145,.08); }
+    .pending-icon {
+      width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+      display: grid; place-items: center;
+      background: #fdeceb; color: var(--warn);
+    }
+    .pending-icon svg { width: 15px; height: 15px; }
+    .pending-text { min-width: 0; }
+    .pending-text strong { display: block; font-size: 12.5px; color: var(--azul-oscuro); font-weight: 700; }
+    .pending-text span {
+      display: block; font-size: 11px; color: var(--gris); line-height: 1.45; margin-top: 2px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    /* ── GRADES ── */
+    .section-title { font-size: 18px; font-weight: 800; color: var(--azul-oscuro); margin-bottom: 14px; }
+    .grades { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; width: 100%; margin-bottom: 30px; }
+    .grade {
+      background: var(--blanco); border: 1px solid #dbe5f1; border-radius: 17px;
+      overflow: hidden; box-shadow: 0 5px 14px rgba(28,65,110,.06); cursor: pointer; transition: all .15s;
+      min-width: 0;
+    }
+    .grade:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(6,59,145,.12); border-color: var(--azul-claro); }
+    .grade-header {
+      background: transparent; color: var(--azul);
+      padding: 0 16px; height: 59px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid #e1e8f1; position: relative;
+    }
+    .grade-header::after { content: none; }
+    .badge-grade {
+      background: #edf5ff; color: #1872d1; padding: 5px 10px; border-radius: 20px;
+      font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .grade-number { font-size: 25px; font-weight: 700; line-height: 1; color: #092f6a; }
+    .card-body { padding: 17px 16px 16px; min-width: 0; }
+    .card-body .title { font-size: 15px; color: #263852; font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-body .subtitle { font-size: 12px; color: #8190a7; margin-bottom: 13px; }
+    .divider { height: 1px; background: #e0e7ef; margin-bottom: 12px; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; color: #7d8da5; font-size: 11px; border-top: 1px solid #e0e7ef; padding-top: 12px; }
+    .info-item { display: flex; align-items: center; gap: 6px; }
+    .info-item .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── RIGHT PANEL ── */
+    .right { display: flex; flex-direction: column; gap: 18px; }
+    .side-card {
+      background: white; border: 1px solid var(--borde); border-radius: var(--radius);
+      padding: 19px; box-shadow: var(--shadow);
+    }
+    .side-card h3 { font-size: 14px; color: var(--azul-oscuro); margin-bottom: 14px; font-weight: 700; }
+    .session {
+      background: #edf5ff; border-radius: 12px; padding: 13px;
+      border-left: 3px solid var(--azul-claro);
+    }
+    .session strong { display: block; color: var(--azul-oscuro); font-size: 12px; margin-bottom: 5px; }
+    .session span { color: #627492; font-size: 11px; }
+    .empty {
+      background: #f2f7ff; border-radius: 12px; padding: 16px; text-align: center;
+    }
+    .empty-icon { font-size: 22px; color: var(--azul-claro); margin-bottom: 7px; }
+    .empty strong { display: block; font-size: 12px; color: var(--azul-oscuro); margin-bottom: 5px; }
+    .empty p { font-size: 11px; color: #6d7d94; line-height: 1.4; }
+
+    /* ── COMPONENTS ── */
+    .breadcrumb-link { color: var(--azul-claro); cursor: pointer; font-weight: 600; text-decoration: none; }
+    .breadcrumb-link:hover { text-decoration: underline; }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 10.5px; font-weight: 600; }
+    .status-badge.alto { background: #fdeceb; color: #b91c1c; }
+    .status-badge.medio { background: #fef3c7; color: #92400e; }
+    .status-badge.bajo { background: #e3f7ee; color: #166534; }
+    .card { background: white; border: 1px solid var(--borde); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 16px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
+    .btn-primary { background: linear-gradient(135deg, var(--azul), var(--azul-oscuro)); color: #fff; box-shadow: 0 2px 8px rgba(6,59,145,.25); }
+    .btn-primary:hover { box-shadow: 0 4px 12px rgba(6,59,145,.35); transform: translateY(-1px); }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+    .btn-secondary:hover { background: #e5e7eb; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 9px 11px; border: 1px solid #d1d5db; border-radius: 8px;
+      font-size: 13px; color: #1f2937; background: #f9fafb;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: var(--azul-claro); box-shadow: 0 0 0 3px rgba(13,99,216,.1); background: #fff;
+    }
+    .form-horizontal { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-horizontal .full { grid-column: 1 / -1; }
+    .student-table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; }
+    .student-table th {
+      background: var(--azul-oscuro); color: white; text-align: left; padding: 10px 14px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+    }
+    .student-table td { padding: 10px 14px; border-bottom: 1px solid #f3f4f6; font-size: 12.5px; color: #374151; }
+    .student-table tr:hover td { background: #f5f8fc; }
+    .student-table tr:last-child td { border-bottom: none; }
+    .questionnaire-card {
+      background: white; border: 1px solid var(--borde); border-radius: 12px;
+      padding: 16px; margin-bottom: 10px; cursor: pointer; transition: all .15s;
+    }
+    .questionnaire-card:hover { border-color: var(--azul-claro); box-shadow: 0 4px 12px rgba(13,99,216,.08); }
+    .questionnaire-card .q-title { font-size: 14px; font-weight: 600; color: #1f2937; }
+    .questionnaire-card .q-meta { font-size: 11.5px; color: #6b7280; margin-top: 3px; }
+    .q-status { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 600; margin-top: 6px; }
+    .q-status.activo { background: #e3f7ee; color: #166534; }
+    .q-status.inactivo { background: #f3f4f6; color: #6b7280; }
+    .timeline { position: relative; padding-left: 22px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; }
+    .timeline-item {
+      position: relative; margin-bottom: 14px; padding: 12px 14px;
+      background: #f9fafb; border-radius: 10px; border: 1px solid #f3f4f6;
+    }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -19px; top: 16px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--azul-claro); border: 2px solid white;
+    }
+    .timeline-item strong { font-size: 12.5px; color: #1f2937; display: block; margin-bottom: 3px; }
+    .timeline-item p { font-size: 11.5px; color: #6b7280; margin: 0; }
+    .timeline-item .timeline-date { font-size: 10.5px; color: #9ca3af; margin-top: 5px; }
+    .seg-card {
+      background: white; border: 1px solid var(--borde); border-radius: 12px;
+      padding: 16px; margin-bottom: 10px; transition: all .15s; cursor: pointer;
+    }
+    .seg-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); transform: translateY(-1px); }
+    .seg-header { display: flex; align-items: center; gap: 12px; }
+    .seg-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 16px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .seg-info h3 { font-size: 14px; font-weight: 700; color: #1f2937; margin: 0; }
+    .seg-info p { font-size: 11.5px; color: #6b7280; margin: 2px 0 0; }
+    .chat-message {
+      background: white; border: 1px solid var(--borde); border-radius: 11px;
+      padding: 14px; margin-bottom: 8px; transition: all .15s;
+    }
+    .chat-message:hover { border-color: var(--azul-claro); }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex;
+      align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(3px);
+    }
+    .modal-box {
+      background: white; border-radius: 18px; width: 100%; max-width: 560px;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,.3); margin: 20px;
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 22px 14px; border-bottom: 1px solid var(--borde);
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; font-size: 18px; cursor: pointer;
+      color: #6b7280; width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { background: #f3f4f6; }
+    .modal-body { padding: 18px 22px 22px; }
+    .oculto { display: none !important; }
+    .ps-section-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 14px; }
+
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .right { display: grid; grid-template-columns: repeat(3, 1fr); }
+      .grades { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 800px) {
+      .sidebar { width: 75px; padding: 20px 10px; }
+      .logo-text, .profile small, .profile strong, .role, .menu-title, .menu-item span, .logout span { display: none; }
+      .logo { justify-content: center; }
+      .profile { padding: 10px; }
+      .profile-top { justify-content: center; }
+      .menu-item { justify-content: center; }
+      .logout { justify-content: center; }
+      .main { margin-left: 75px; width: calc(100% - 75px); padding: 20px; }
+      .grades { grid-template-columns: 1fr; }
+      .right { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 550px) {
+      .stats { grid-template-columns: 1fr; }
+      .title h2 { font-size: 22px; }
+    }
+  </style>
+</head>
+
+<body onload="validarAcceso('psicologa'); cargarTema(); renderMenuPsicologa(); cargarPanelPsicologa(); mostrarSeccionPsicologa('ps-inicio'); irSeccionDestino();">
+  <button class="sidebar-toggle" aria-label="Menú" onclick="document.body.classList.toggle('sidebar-open')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <button id="btnTema" class="theme-icon" onclick="cambiarTema()" title="Cambiar tema" style="display:none;"></button>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" onclick="if(window.innerWidth<=768) document.body.classList.remove('sidebar-open')">
+
+      <div class="logo">
+        <img src="../assets/img/colegio/escudo-ofelia.png" alt="Escudo SAT" class="logo-img">
+        <div class="logo-text">
+          <h1>SAT Escolar</h1>
+          <span>SISTEMA DE ALERTA TEMPRANA</span>
+        </div>
+      </div>
+
+      <div class="user-card">
+        <div class="avatar-container">
+          <svg class="avatar-icon" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="user-info">
+          <span class="greeting">Hola,</span>
+          <span class="name" id="psProfileName">Cargando...</span>
+          <span class="user-badge" id="psProfileRole">PSICOLOGO</span>
+        </div>
+      </div>
+
+      <div class="menu-title">PANEL</div>
+
+      <nav class="menu" id="psMenu"><!-- Menú compartido: se genera desde PS_MENU en psicologia.js --></nav>
+
+            <div class="logout">
+        <button class="logout-btn" onclick="cerrarSesion()">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </div>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main">
+
+      <div class="top">
+        <div class="title">
+          <h2 id="psTopbarTitle">Panel Psicopedagogico</h2>
+          <p id="psBreadcrumb">Bienvenido &middot; Vision general del sistema</p>
+        </div>
+        <div class="notification" onclick="mostrarSeccionPsicologa('ps-incidencias'); incInlineCargar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span id="badgeIncidentes" class="dot" style="display:none;"></span>
+        </div>
+      </div>
+
+      <div class="layout">
+        <section>
+          <!-- INICIO -->
+          <section id="ps-inicio" class="seccion-psicologa">
+            <div id="psInicioContainer"></div>
+          </section>
+
+          <!-- RESPUESTAS -->
+          <section id="ps-respuestas" class="seccion-psicologa oculto">
+            <div id="psRespVistaGrados"></div>
+            <div id="psRespVistaSecciones" class="oculto"></div>
+            <div id="psRespVistaCuestionarios" class="oculto"></div>
+            <div id="psRespVistaDetalle" class="oculto"></div>
+          </section>
+
+          <!-- FORMULARIOS -->
+          <section id="ps-formularios" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px; margin-bottom:18px;">
+              <div class="ps-section-title">Crear formulario</div>
+              <input type="hidden" id="psFormEditId">
+              <div class="form-horizontal">
+                <div class="form-group"><label>Titulo</label><input type="text" id="psFormTitulo" placeholder="Ej: Bienestar semanal"></div>
+                <div class="form-group"><label>Grado</label><select id="psFormGrado" onchange="cargarSeccionesFormulario()"><option value="">Cargando...</option></select></div>
+                <div class="form-group"><label>Seccion</label><select id="psFormSeccion"><option value="">Seleccionar</option></select></div>
+                <div class="form-group full"><label>Descripcion</label><textarea id="psFormDescripcion" placeholder="Objetivo del formulario..."></textarea></div>
+              </div>
+              <div style="margin-top:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:14px;font-weight:700;">Preguntas</span><div style="display:flex;gap:8px;"><button class="btn btn-secondary" onclick="agregarPreguntaPsicologica('cerrada')">+ Cerrada</button><button class="btn btn-secondary" onclick="agregarPreguntaPsicologica('likert')">+ Likert (1-5)</button><button class="btn btn-secondary" onclick="agregarPreguntaPsicologica('abierta')">+ Abierta</button></div></div>
+                <div id="psPreguntasContainer"></div>
+              </div>
+              <div style="margin-top:14px;display:flex;gap:8px;">
+                <button class="btn btn-primary" id="btnGuardarFormularioPs" onclick="guardarFormularioPsicologico()">Guardar</button>
+                <button class="btn btn-secondary oculto" id="btnCancelarEdicionFormularioPs" onclick="cancelarEdicionFormularioPsicologico()">Cancelar</button>
+              </div>
+            </div>
+            <div class="card" style="padding:20px;">
+              <div class="ps-section-title">Formularios creados</div>
+              <div id="tablaFormulariosPsicologicos" style="display:grid; gap:10px;"></div>
+            </div>
+          </section>
+
+          <!-- TESTS VALIDADOS -->
+          <section id="ps-tests-validados" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px; margin-bottom:16px; border:1px solid #dbeafe; background:linear-gradient(135deg,#f8fbff,#ffffff);">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <span style="background:#063b91; color:white; font-size:11px; font-weight:800; padding:4px 8px; border-radius:999px;">MINSA</span>
+                <span style="font-size:11px; color:#6b7280;">Tests con validación oficial — puntaje automático</span>
+              </div>
+              <div class="ps-section-title" style="margin-bottom:6px;">Tests Validados</div>
+              <p style="font-size:12.5px; color:var(--gris);">Elige un test breve validado y habilítalo a una sección. El estudiante lo verá como cuestionario y el sistema lo corrige solo (ej. GAD-7 0-21 con niveles).</p>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:14px;">
+              <button class="btn btn-secondary btn-sm" onclick="abrirModalGenerarIA()" style="font-size:12px; border:1px solid #dbeafe; background:#f8fbff; color:#063b91;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Generar con IA</button>
+              <button class="btn btn-primary btn-sm" onclick="abrirModalImportarExcel()" style="font-size:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Importar test desde Excel</button>
+            </div>
+            <div id="testsValidadosCatalogo" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:12px; align-items:stretch;"></div>
+            <div id="testsValidadosHabilitarBox" class="card oculto" style="padding:16px; margin-top:14px; border:1px solid #e5e7eb; background:white;"></div>
+          </section>
+
+          <!-- ALERTAS -->
+          <section id="ps-alertas" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                <div class="ps-section-title" style="margin-bottom:0;">Alertas de riesgo</div>
+                <button class="btn btn-secondary btn-sm" id="btnToggleHistorialAlertas" onclick="toggleHistorialAlertas()" style="font-size:11px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;vertical-align:-1px;margin-right:3px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Historial</button>
+              </div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:14px;">Alertas pendientes. Al atenderlas se ocultan de esta lista.</p>
+              <div id="alertasPsicologaLista" style="display:grid; gap:10px;"></div>
+              <div id="alertasHistorialLista" class="oculto" style="display:grid; gap:10px; margin-top:16px; border-top:1px solid #e5e7eb; padding-top:16px;">
+                <div style="font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.5px;">Historial de alertas atendidas</div>
+                <div id="alertasHistorialItems"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CHAT -->
+          <section id="ps-chat" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px;">
+              <div class="ps-section-title">Chat anonimo</div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:14px;">Estudiantes y docentes escriben de forma anonima.</p>
+              <div id="chatPsicologaLista" style="display:grid; gap:10px;"></div>
+            </div>
+            <div class="card oculto" id="vistaChatConversacion" style="margin-top:18px; padding:20px;">
+              <h2 style="font-size:15px; margin-bottom:10px;">Conversacion</h2>
+              <div id="chatConversacion"></div>
+              <div id="chatRespuestaBox" class="oculto" style="margin-top:12px; display:flex; gap:8px;">
+                <input type="text" id="chatRespuestaTexto" placeholder="Escribe tu respuesta..." style="flex:1; padding:9px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+                <button class="btn btn-primary" onclick="responderChatPsicologa()">Enviar</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SEGUIMIENTO -->
+          <section id="ps-seguimiento" class="seccion-psicologa oculto">
+            <div id="segListaContainer"></div>
+            <div id="segDetalleContainer" class="oculto"></div>
+          </section>
+
+          <!-- PREDICCIONES IA -->
+          <section id="ps-predicciones" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px; margin-bottom:18px;">
+              <div class="ps-section-title" style="display:flex; align-items:center; gap:10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--azul)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2Z"/><path d="M20.66 7A10 10 0 0 0 14 2v6h6.66Z" opacity=".7"/></svg>
+                Prediccion de comportamientos con IA
+              </div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:16px;">
+                Selecciona un estudiante y genera el análisis.
+              </p>
+              <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="flex:1; min-width:200px;">
+                  <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Seccion</label>
+                  <select id="predSeccion" onchange="cargarEstudiantesPrediccion()" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+                    <option value="">Cargando...</option>
+                  </select>
+                </div>
+                <div style="flex:2; min-width:250px;">
+                  <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Estudiante</label>
+                  <select id="predEstudiante" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+                    <option value="">Seleccionar estudiante</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary" id="btnGenerarPrediccion" onclick="generarPrediccion()" style="white-space:nowrap;">
+                  Generar prediccion
+                </button>
+              </div>
+              <div style="margin-top:16px; background:#f8fafc; border:1px solid #eef2f7; border-radius:12px; padding:14px;">
+                <label style="font-size:12px; font-weight:700; color:#374151; display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                  <span style="width:22px;height:22px;border-radius:6px;background:#edf4ff;display:grid;place-items:center;color:#0d63d8;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></span>
+                  Rasgos del adolescente <span style="font-weight:400; color:#9ca3af; font-size:11px;">(opcional)</span>
+                  <span style="margin-left:auto; font-size:11px; color:#0d63d8; cursor:pointer;" onclick="document.getElementById('predRasgos').focus()">+ añadir</span>
+                </label>
+                <!-- Checks estructurados opcionales — no reemplazan el texto libre, lo complementan -->
+                <details style="margin-bottom:8px; background:white; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px;">
+                  <summary style="font-size:11px; font-weight:600; color:#6b7280; cursor:pointer; list-style:none; display:flex; align-items:center; gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Rasgos rápidos (opcional) — marca lo observado</summary>
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px 12px; margin-top:8px; font-size:11px; color:#374151;">
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="inquieto, se distrae fácilmente"> inquieto / se distrae</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="agresivo verbal"> agresivo verbal</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="se aísla, pocos amigos"> se aísla / pocos amigos</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="líder, seguido por pares"> líder / seguido</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="busca pleitos, confrontativo"> busca pleitos</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="irritable, cambios de humor"> irritable</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="triste, decaído"> triste / decaído</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="ansioso, nervioso"> ansioso</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="cansado, somnolencia, llega tarde lunes"> cansado / sueño lunes</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="posible olor a alcohol"> posible olor alcohol</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="familia ausente, no viene a reuniones"> familia ausente</label>
+                    <label style="display:flex; align-items:center; gap:4px; cursor:pointer;"><input type="checkbox" class="predRasgoCheck" value="conflicto familiar observado"> conflicto familiar</label>
+                  </div>
+                  <div style="font-size:10px; color:#9ca3af; margin-top:6px;">Se suman a tu texto libre. Si no marcas nada, solo se envía lo que escribas.</div>
+                </details>
+                <textarea id="predRasgos" rows="3" maxlength="9000" placeholder="Ej: cabello largo, usa lentes, es muy conversador, juega mucho en recreo, se distrae fácil, es líder, etc. Cuanto más describas, más precisa será la predicción." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13px; resize:vertical; background:white;"></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                  <span style="font-size:11px; color:#9ca3af;">Esto alimenta a la IA junto con notas, asistencia, cuestionarios y la observación del docente en comportamiento.</span>
+                  <span style="font-size:11px; color:#9ca3af;"><span id="predRasgosCount">0</span>/1500 palabras</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="prediccionResultado" class="oculto"></div>
+            <div id="prediccionHistorial" style="margin-top:18px;"></div>
+          </section>
+
+          <!-- DERIVACIONES -->
+          <section id="ps-derivaciones" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                <div class="ps-section-title" style="margin-bottom:0;">Derivaciones</div>
+                <button class="btn btn-primary btn-sm" onclick="cargarDerivacionesPendientes()" style="font-size:11px;">Actualizar</button>
+              </div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:14px;">Estudiantes derivados por incidente o por dirección. Se envía expediente + informe y genera notificación.</p>
+              <div id="derivacionesLista" style="display:grid; gap:10px;"></div>
+            </div>
+          </section>
+
+          <!-- EXPEDIENTE (vista en página, sin ventana flotante) -->
+          <section id="ps-expediente" class="seccion-psicologa oculto">
+            <div id="expInlinePicker" class="card" style="padding:20px;">
+              <div class="ps-section-title">Expediente del estudiante</div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:12px;">Busca por nombre o navega por grados y secciones.</p>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="expInlineSearch" placeholder="Escribe nombre o apellidos..." autocomplete="off" oninput="expInlineBuscar(this.value)" style="flex:1; padding:9px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+              </div>
+              <div id="expInlineResults" style="display:grid; gap:8px; margin-top:12px;"></div>
+              <div id="expInlineNavegacion" style="margin-top:18px; border-top:1px solid #e5e7eb; padding-top:16px;">
+                <div id="expGrados"></div>
+                <div id="expSecciones" class="oculto"></div>
+                <div id="expEstudiantes" class="oculto"></div>
+              </div>
+            </div>
+            <div id="expInlineVista" class="oculto">
+              <div class="card" style="padding:18px 20px; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                  <button class="btn btn-secondary btn-sm" onclick="mostrarSeccionPsicologa('ps-inicio')">← Volver a Inicio</button>
+                  <button class="btn btn-secondary btn-sm" onclick="expInlineVolver()" style="background:white;">Cambiar estudiante</button>
+                  <div id="expInlineHead" style="flex:1; min-width:200px;"></div>
+                </div>
+              </div>
+              <div class="card" style="padding:20px; margin-bottom:16px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <div class="ps-section-title" style="margin-bottom:0;">Documentos</div>
+                  <button class="btn btn-primary btn-sm" onclick="abrirModalNuevoFormato()">+ Nuevo documento</button>
+                </div>
+                <div id="expInlineTiles" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:10px;"></div>
+              </div>
+              <div class="card" style="padding:20px;">
+                <div class="ps-section-title" id="expInlineHistTitulo">Historial</div>
+                <div id="expInlineHist" style="display:grid; gap:10px;"></div>
+                <div id="expInlineDetalle" class="oculto"></div>
+              </div>
+              <div class="card" style="padding:20px; margin-top:16px;">
+                <h3 style="font-size:12px; font-weight:700; color:#102a56; margin-bottom:6px;">Reporte bimestral</h3>
+                <div style="display:flex; gap:8px; align-items:end; flex-wrap:wrap;">
+                  <div><label style="font-size:11px;">Desde</label><input id="reporteInicio" type="date" style="padding:6px 8px; border:1px solid #d1d5db; border-radius:6px; font-size:12px;"></div>
+                  <div><label style="font-size:11px;">Hasta</label><input id="reporteFin" type="date" style="padding:6px 8px; border:1px solid #d1d5db; border-radius:6px; font-size:12px;"></div>
+                  <button class="btn btn-secondary btn-sm" onclick="generarReporteBimestral()">Generar</button>
+                </div>
+                <div id="reporteMsg" style="font-size:12px; margin-top:6px;"></div>
+                <div id="reporteResultado"></div>
+              </div>
+              <span id="expedienteEstudianteNombre" class="oculto"></span>
+            </div>
+          </section>
+
+          <!-- DOCUMENTACIÓN — Historial diario y descarga por fecha -->
+          <section id="ps-documentacion" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                <div>
+                  <div class="ps-section-title" style="margin-bottom:4px;">Documentación — Respaldo diario</div>
+                  <p style="font-size:12.5px; color:var(--gris); margin:0;">Elige un día en el calendario para ver todos los documentos creados ese día. Se guardan con el nombre <b>tipo — estudiante</b>.</p>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:end;">
+                  <div>
+                    <label style="font-size:11px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Fecha</label>
+                    <input type="date" id="docFecha" style="padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;" onchange="cargarDocumentosPorFecha(this.value)">
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="document.getElementById('docFecha').valueAsDate = new Date(); cargarDocumentosPorFecha(document.getElementById('docFecha').value)">Hoy</button>
+                </div>
+              </div>
+
+              <div style="background:#f8fbff; border:1px solid #dbeafe; border-radius:10px; padding:12px; margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <div style="flex:1; min-width:220px;">
+                  <div style="font-size:12px; font-weight:700; color:#1e3a5c;">Carpeta de respaldo</div>
+                  <div id="docCarpetaEstado" style="font-size:11px; color:#6b7280; margin-top:2px;">No has elegido carpeta. Se descargará un ZIP en Descargas.</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btnElegirCarpeta" onclick="elegirCarpetaDocumentacion()">Elegir carpeta</button>
+                <button class="btn btn-secondary btn-sm oculto" id="btnOlvidarCarpeta" onclick="olvidarCarpetaDocumentacion()">Olvidar</button>
+              </div>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                <div style="font-size:13px; font-weight:700; color:#1f2937;">Documentos del día: <span id="docContador">0</span></div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-primary btn-sm" id="btnDescargarDia" onclick="descargarDocumentosDelDia()" disabled>Descargar del día</button>
+                </div>
+              </div>
+
+              <div id="docLista" style="display:grid; gap:8px;">
+                <div style="padding:24px; text-align:center; color:#9ca3af; font-size:13px; border:1px dashed #d1d5db; border-radius:10px;">Selecciona una fecha para ver los documentos.</div>
+              </div>
+              <p style="font-size:11px; color:#9ca3af; margin-top:10px; text-align:center;">Cada archivo se guarda como <b>“tipo — Apellidos Nombres.doc”</b> dentro de la carpeta <b>YYYY-MM-DD</b>. Ej.: <i>ficha_socioeducativa — Elias Fernandez Llanos.doc</i></p>
+            </div>
+          </section>
+
+          <!-- INCIDENCIAS (vista en página, sin ventana flotante) -->
+          <section id="ps-incidencias" class="seccion-psicologa oculto">
+            <div class="card" style="padding:20px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:8px; flex-wrap:wrap;">
+                <div class="ps-section-title" style="margin-bottom:0;">Incidencias reportadas</div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-secondary btn-sm" onclick="incInlineCargar()" style="font-size:11px;">Actualizar</button>
+                  <button class="btn btn-primary btn-sm" onclick="abrirModalIncidencia()" style="font-size:11px;">+ Nueva incidencia</button>
+                </div>
+              </div>
+              <p style="font-size:12.5px; color:var(--gris); margin-bottom:14px;">Reportes anónimos de estudiantes y docentes. Pulsa uno para ver el detalle.</p>
+              <div id="incInlineFormWrap" class="oculto" style="border:1px solid #dbe4f0; background:#f8fbff; border-radius:12px; padding:16px; margin-bottom:14px;">
+                <div style="font-size:13px; font-weight:800; color:#102a56; margin-bottom:10px;">Registrar incidencia</div>
+                <div style="display:grid; gap:10px;">
+                  <div class="form-group" style="position:relative;">
+                    <label>Estudiante *</label>
+                    <input id="incBuscarEstudiante" type="text" placeholder="Escribe nombre y apellidos..." autocomplete="off" oninput="onIncBuscarInput(this.value)" onfocus="onIncBuscarFocus()" onblur="setTimeout(()=>{const s=document.getElementById('incSugerencias'); if(s) s.style.display='none'}, 200)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;">
+                    <input type="hidden" id="incEstudianteIdHidden">
+                    <div id="incSugerencias" style="position:absolute; top:62px; left:0; right:0; background:white; border:1px solid #d1d5db; border-radius:8px; max-height:160px; overflow-y:auto; display:none; z-index:10; box-shadow:0 8px 16px rgba(0,0,0,0.08);"></div>
+                    <div style="font-size:10px; color:#9ca3af; margin-top:4px;">Escribe 2 letras y elige. Se auto-completa grado y sección.</div>
+                    <select id="incEstudianteId" style="display:none;"><option value="">Seleccionar</option></select>
+                  </div>
+                  <div class="form-group"><label>Sección (auto)</label><select id="incSeccionId" onchange="cargarEstudiantesIncidencia(this.value)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:#f9fafb;"><option value="">Se asigna al elegir estudiante</option></select></div>
+                  <div class="form-group"><label>Tipo *</label><select id="incTipo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;"><option value="">Seleccionar</option><option value="tardanza_reiterada">Tardanza reiterada</option><option value="falta_injustificada">Falta injustificada</option><option value="agresion">Agresión</option><option value="vandalismo">Vandalismo</option><option value="consumo_sospecha">Consumo sospecha</option><option value="desinteres">Desinterés</option><option value="otro">Otro</option></select></div>
+                  <div class="form-group"><label>Descripción *</label><input id="incDescripcion" type="text" placeholder="Ej: Pelea en recreo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;"></div>
+                  <div class="form-group"><label>Observación</label><textarea id="incObservacion" rows="2" placeholder="Detalle, contexto, testigos..." style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;"></textarea></div>
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group"><label>Derivar a (opcional)</label><select id="incDerivarA" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;"><option value="">Sin derivación</option><option value="psicologo">Psicólogo</option><option value="tutor">Tutor</option><option value="direccion">Dirección</option></select></div>
+                    <div class="form-group"><label>Informe derivación</label><input id="incMotivoDerivacion" type="text" placeholder="Motivo breve" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:white;"></div>
+                  </div>
+                </div>
+                <div id="incMsg" style="margin-top:10px; font-size:12.5px;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; border-top:1px solid #e5e7eb; padding-top:12px;">
+                  <button class="btn btn-secondary" onclick="document.getElementById('incInlineFormWrap').classList.add('oculto')">Cancelar</button>
+                  <button class="btn btn-primary" onclick="crearIncidencia()">Guardar incidencia</button>
+                </div>
+              </div>
+              <div id="incInlineLista" style="display:grid; gap:10px;"></div>
+              <div id="incInlineDetalle" class="oculto"></div>
+            </div>
+          </section>
+        </section>
+
+        <!-- COLUMNA DERECHA -->
+        <aside class="right">
+          <div class="side-card">
+            <h3>Sesion de hoy</h3>
+            <div id="psRightSession">
+              <div class="empty">
+                <div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                <strong>Sin sesiones</strong>
+                <p>No hay secciones asignadas</p>
+              </div>
+            </div>
+          </div>
+          <div class="side-card">
+            <h3>Alertas pendientes</h3>
+            <div id="psRightAlertas">
+              <div class="empty">
+                <div class="empty-icon">&#9650;</div>
+                <strong>Sin alertas registradas</strong>
+                <p>Apareceran aqui al activarse el sistema</p>
+              </div>
+            </div>
+          </div>
+          <div class="side-card">
+            <h3>Comunicados</h3>
+            <div class="empty">
+              <div class="empty-icon">&#9993;</div>
+              <p>No se encontraron anuncios</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modalIncidentes" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalIncidentes')">
+    <div class="modal-box"><div class="modal-header"><h2 id="modalIncidentesTitulo">Incidentes</h2><button class="modal-close" onclick="cerrarModal('modalIncidentes')">&times;</button></div><div class="modal-body" id="modalIncidentesBody"></div></div>
+  </div>
+
+  <!-- MODAL FICHA SOCIOEDUCATIVA (solo lectura, psicólogo) — colores sistema SAT -->
+  <div id="modalFichaVista" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalFichaVista')">
+    <div class="modal-box" style="max-width:860px; width:calc(100vw - 32px); max-height:92vh; padding:0; overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e4976 0%,#1a3a5c 100%); border-radius:16px 16px 0 0;">
+        <div>
+          <h2 id="fichaVistaTitulo" style="font-size:15px; font-weight:800; color:white; margin:0;">Ficha Socioeducativa</h2>
+          <p style="font-size:11px; color:#cfe0ff; margin:2px 0 0;">Cuestionario completo · solo lectura · no editable</p>
+        </div>
+        <button class="modal-close" style="color:white;" onclick="cerrarModal('modalFichaVista')">&times;</button>
+      </div>
+      <div class="modal-body" id="fichaVistaBody" style="max-height:calc(92vh - 90px); overflow-y:auto; padding:16px 20px;"></div>
+    </div>
+  </div>
+  <div id="modalDetalleRespuestaPs" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalDetalleRespuestaPs')">
+    <div class="modal-box" style="max-width:720px;"><div class="modal-header"><h2 id="modalDetalleRespuestaTitulo">Detalle</h2><button class="modal-close" onclick="cerrarModal('modalDetalleRespuestaPs')">&times;</button></div><div class="modal-body" id="modalDetalleRespuestaBody"></div></div>
+  </div>
+  <div id="modalPuntajesFormularioPs" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalPuntajesFormularioPs')">
+    <div class="modal-box"><div class="modal-header"><div><h2 id="modalPuntajesFormularioTitulo">Configurar puntajes</h2><p style="font-size:12px;color:var(--gris);">Asigna el nivel de senal de cada respuesta.</p></div><button class="modal-close" onclick="cerrarModal('modalPuntajesFormularioPs')">&times;</button></div><div class="modal-body"><div id="psPuntajesPreguntas"></div><button id="btnGuardarPuntajesPs" class="btn btn-primary" onclick="guardarPuntajesFormularioPs()" style="margin-top:12px;">Guardar</button></div></div>
+  </div>
+
+  <!-- MODAL INTERVENCIÓN PROFESIONAL -->
+  <div id="modalIntervencion" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalIntervencion')">
+    <div class="modal-box" style="max-width:640px;">
+      <div class="modal-header" style="padding:20px 24px; border-bottom:1px solid #eef2f7; background:linear-gradient(135deg,#f8fbff,#eef4ff);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--azul),var(--azul-oscuro));display:grid;place-items:center;color:white;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg></div>
+          <div>
+            <h2 id="modalIntervencionTitulo" style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Nueva intervención</h2>
+            <p id="modalIntervencionSubtitulo" style="font-size:12.5px; color:#6b7280; margin:2px 0 0;">Registra el seguimiento del estudiante</p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalIntervencion')" style="background:#fff; border:1px solid #e5e7eb;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:22px 24px 18px;">
+        <input type="hidden" id="intEstudianteId">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Tipo de intervención *</label>
+            <select id="intTipo" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+              <option value="">Seleccionar</option>
+              <option value="Entrevista">Entrevista</option>
+              <option value="Observacion">Observación</option>
+              <option value="Derivacion">Derivación</option>
+              <option value="Taller">Taller</option>
+              <option value="Seguimiento familiar">Seguimiento familiar</option>
+              <option value="Consejeria">Consejería</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Estado emocional</label>
+            <select id="intEstadoEmocional" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+              <option value="">Seleccionar</option>
+              <option value="Tranquilo">Tranquilo</option>
+              <option value="Ansioso">Ansioso</option>
+              <option value="Motivado">Motivado</option>
+              <option value="Desmotivado">Desmotivado</option>
+              <option value="Irritable">Irritable</option>
+              <option value="Triste">Triste</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Descripción de la intervención *</label>
+          <textarea id="intDescripcion" rows="3" placeholder="Describe lo realizado, hallazgos, acuerdos..." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; resize:vertical; background:#f9fafb;"></textarea>
+          <div style="font-size:11px; color:#9ca3af; margin-top:4px; text-align:right;"><span id="intDescCount">0</span>/5000</div>
+        </div>
+        <div class="form-group">
+          <label>Acuerdos / Compromisos</label>
+          <input type="text" id="intAcuerdos" placeholder="Ej: Reunión con padres el viernes" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+        </div>
+        <div class="form-group">
+          <label>Rasgos del adolescente <span style="font-weight:400; color:#9ca3af; font-size:11px;">(opcional)</span></label>
+          <textarea id="intRasgos" rows="3" maxlength="9000" placeholder="Ej: cabello largo, lentes, muy conversador, líder natural, se distrae jugando, tímido al inicio..." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13px; resize:vertical; background:#fff;"></textarea>
+          <div style="font-size:11px; color:#9ca3af; margin-top:3px; display:flex; justify-content:space-between;"><span>Quedará en el reporte de seguimiento.</span><span><span id="intRasgosCount">0</span>/1500 palabras</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Fecha intervención</label>
+            <input type="date" id="intFecha" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Próxima fecha</label>
+            <input type="date" id="intProximaFecha" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Evidencia (imagen opcional)</label>
+          <div id="intDropZone" onclick="document.getElementById('intImagen').click()" style="border:1.8px dashed #cbd5e1; border-radius:12px; padding:18px; text-align:center; cursor:pointer; background:#f8fafc; transition:.15s;" onmouseover="this.style.borderColor='#0d63d8'; this.style.background='#f0f7ff'" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'">
+            <div id="intDropPlaceholder">
+              <div style="width:44px; height:44px; border-radius:10px; background:#edf4ff; display:grid; place-items:center; margin:0 auto 8px; color:#0d63d8;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 0 2 2H5a2 2 0 0 0 2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+              <div style="font-size:13px; font-weight:600; color:#374151;">Click o arrastra una imagen</div>
+              <div style="font-size:11.5px; color:#9ca3af; margin-top:2px;">JPEG, PNG, WebP o GIF · máx 5 MB</div>
+            </div>
+            <div id="intPreviewWrap" style="display:none;">
+              <img id="intPreview" style="max-width:100%; max-height:180px; border-radius:10px; border:1px solid #e5e7eb; margin:0 auto; display:block;">
+              <div style="font-size:11px; color:#6b7280; margin-top:6px;" id="intPreviewName"></div>
+              <button type="button" onclick="event.stopPropagation(); quitarImagenIntervencion()" style="margin-top:8px; font-size:11px; padding:6px 10px; border-radius:8px; border:1px solid #fecaca; background:#fff5f5; color:#dc2626; cursor:pointer;">Quitar imagen</button>
+            </div>
+          </div>
+          <input type="file" id="intImagen" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none;" onchange="previewIntervencionImagen(this)">
+        </div>
+        <div id="intError" style="display:none; margin-top:12px; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:10px 12px; border-radius:10px; font-size:12.5px;"></div>
+      </div>
+      <div style="padding:14px 24px 20px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid #f3f4f6; background:#fcfdff; border-radius:0 0 18px 18px;">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalIntervencion')">Cancelar</button>
+        <button class="btn btn-primary" id="btnGuardarIntervencion" onclick="guardarIntervencion()">Guardar intervención</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR ESTADO PROFESIONAL -->
+  <div id="modalEditarEstado" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalEditarEstado')">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header" style="border-bottom:1px solid #eef2f7;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:38px;height:38px;border-radius:10px;background:#edf4ff;display:grid;place-items:center;color:#0d63d8;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg></div>
+          <div>
+            <h2 style="font-size:15px; font-weight:800; color:#102a56; margin:0;">Editar estado del caso</h2>
+            <p id="modalEditarEstadoSub" style="font-size:12px; color:#6b7280; margin:2px 0 0;"></p>
+          </div>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalEditarEstado')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:20px 22px 16px;">
+        <input type="hidden" id="editEstadoEstudianteId">
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="editEstado" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+            <option value="abierto">Riesgo alto</option>
+            <option value="en_seguimiento">Monitoreo</option>
+            <option value="cerrado">Estable</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prioridad</label>
+          <select id="editPrioridad" style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13.5px; background:#f9fafb;">
+            <option value="baja">Baja</option>
+            <option value="media">Media</option>
+            <option value="alta">Alta</option>
+            <option value="critica">Crítica</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Observación del cambio <span style="color:#dc2626;">*</span> <span style="font-weight:400; color:#9ca3af; font-size:11px;">— por qué cambias el estado</span></label>
+          <textarea id="editEstadoObservacion" rows="3" maxlength="1000" placeholder="Ej: tras 2 intervenciones el estudiante muestra asistencia regular 95%, participa en clase y refiere sentirse mejor en casa. Se cierra por mejora sostenida..." style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13px; resize:vertical; background:#fff;"></textarea>
+          <div style="font-size:11px; color:#9ca3af; margin-top:3px; text-align:right;"><span id="editObsCount">0</span>/1000</div>
+        </div>
+        <div id="editEstadoError" style="display:none; margin-top:12px; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; padding:10px 12px; border-radius:10px; font-size:12.5px;"></div>
+      </div>
+      <div style="padding:14px 22px 18px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid #f3f4f6;">
+        <button class="btn btn-secondary" onclick="cerrarModal('modalEditarEstado')">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarEdicionEstado()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN PROFESIONAL (reemplaza confirm nativo) -->
+  <div id="modalConfirm" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalConfirm')">
+    <div class="modal-box" style="max-width:420px; text-align:center;">
+      <div class="modal-body" style="padding:28px 22px 18px;">
+        <div id="modalConfirmIcon" style="width:56px; height:56px; border-radius:50%; background:#fef2f2; display:grid; place-items:center; margin:0 auto 14px; color:#dc2626;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <h2 id="modalConfirmTitulo" style="font-size:16px; font-weight:800; color:#111827; margin:0 0 6px;">¿Confirmar acción?</h2>
+        <p id="modalConfirmMensaje" style="font-size:13px; color:#6b7280; line-height:1.5; margin:0;">Esta acción no se puede deshacer.</p>
+      </div>
+      <div style="padding:0 22px 22px; display:flex; gap:10px; justify-content:center;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="cerrarModal('modalConfirm')">Cancelar</button>
+        <button class="btn btn-primary" style="flex:1; background:#dc2626;" id="modalConfirmBtn" onclick="ejecutarConfirm()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VISTA PREVIA TEST VALIDADO -->
+  <div id="modalPreviewTest" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalPreviewTest')">
+    <div class="modal-box" style="max-width:640px; max-height:88vh;">
+      <div class="modal-header">
+        <h2 id="previewTestTitulo" style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Vista previa del test</h2>
+        <button class="modal-close" onclick="cerrarModal('modalPreviewTest')">&times;</button>
+      </div>
+      <div class="modal-body" id="previewTestBody" style="max-height:calc(88vh - 80px); overflow-y:auto; padding:18px 22px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL IMPORTAR EXCEL -->
+  <div id="modalImportarExcel" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalImportarExcel')">
+    <div class="modal-box" style="max-width:680px; max-height:90vh;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Importar test desde Excel</h2>
+        <button class="modal-close" onclick="cerrarModal('modalImportarExcel')">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:calc(90vh - 80px); overflow-y:auto; padding:18px 22px;">
+        <div id="excelUploadStep">
+          <div style="background:#f0f7ff; border:1px solid #bfdbfe; border-radius:10px; padding:14px; margin-bottom:14px;">
+            <div style="font-size:12px; font-weight:700; color:#063b91; margin-bottom:6px;">Formatos aceptados</div>
+            <div style="font-size:11.5px; color:#374151; line-height:1.6;">
+              El Excel debe tener: <strong>Columna A = Preguntas</strong>, Columnas B, C, D... = Opciones con puntaje.<br>
+              Opcional: fila de encabezados con "Pregunta", "Opcion 1", "Puntaje 1", etc.
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Nombre del test</label>
+              <input id="excelTestNombre" type="text" placeholder="Ej: Test de autoestima" style="width:100%; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Autor / Fuente</label>
+              <input id="excelTestAutor" type="text" placeholder="Ej: Psic. Maria Lopez" style="width:100%; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+            </div>
+          </div>
+          <div style="border:2px dashed #d1d5db; border-radius:12px; padding:30px; text-align:center; cursor:pointer; transition: border-color 0.2s;" onclick="document.getElementById('excelFileInput').click()" onmouseover="this.style.borderColor='#063b91'" onmouseout="this.style.borderColor='#d1d5db'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="width:36px;height:36px;margin:0 auto 10px;display:block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="M9 15l3-3 3 3"/></svg>
+            <div style="font-size:13px; color:#374151; font-weight:600;">Arrastra o haz click para seleccionar</div>
+            <div style="font-size:11.5px; color:#9ca3af; margin-top:4px;">Solo archivos .xlsx o .xls (max 5MB)</div>
+            <input id="excelFileInput" type="file" accept=".xlsx,.xls" style="display:none" onchange="handleExcelFile(this)">
+          </div>
+          <div id="excelFileName" style="margin-top:10px; font-size:12px; color:#6b7280; display:none;"></div>
+        </div>
+        <div id="excelPreviewStep" class="oculto"></div>
+        <div id="excelMsg" style="margin-top:10px; font-size:12.5px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL GENERAR CON IA -->
+  <div id="modalGenerarIA" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalGenerarIA')">
+    <div class="modal-box" style="max-width:680px; max-height:90vh;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0; display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" fill="none" stroke="#063b91" stroke-width="2" style="width:18px;height:18px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Generar test con IA</h2>
+        <button class="modal-close" onclick="cerrarModal('modalGenerarIA')">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:calc(90vh - 80px); overflow-y:auto; padding:18px 22px;">
+        <div id="iaFormStep">
+          <div style="background:#f0f7ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; margin-bottom:14px;">
+            <div style="font-size:11px; color:#1e3a5f; line-height:1.5;">Describe cómo quieres el test y para qué lo usarás. La IA generará preguntas, opciones y rangos. Luego verás vista previa antes de crear.</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">¿Cómo lo quieres? <span style="font-weight:400; color:#9ca3af;">(objetivo)</span></label>
+            <input id="iaObjetivo" type="text" placeholder="Ej: Test breve para detectar ansiedad leve en 3ro" style="width:100%; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">¿Para qué lo quieres?</label>
+            <textarea id="iaParaQue" rows="3" placeholder="Ej: Para tamizaje preventivo antes de tutoría, identificar riesgo moderado y derivar a psicólogo. Para 13-15 años, lenguaje sencillo." style="width:100%; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; resize:vertical;"></textarea>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Nº preguntas</label>
+              <select id="iaNumPreg" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="5">5</option><option value="8" selected>8</option><option value="10">10</option><option value="12">12</option><option value="15">15</option></select>
+            </div>
+            <div>
+              <label style="font-size:12px; font-weight:600; color:#374151; display:block; margin-bottom:4px;">Autor / Fuente</label>
+              <input id="iaAutor" type="text" placeholder="Ej: Psic. María López" style="width:100%; padding:8px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+            </div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px;">
+            <button class="btn btn-secondary" onclick="cerrarModal('modalGenerarIA')">Cancelar</button>
+            <button class="btn btn-primary" id="btnGenerarIA" onclick="generarTestIA()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Generar vista previa</button>
+          </div>
+        </div>
+        <div id="iaPreviewStep" class="oculto"></div>
+        <div id="iaMsg" style="margin-top:10px; font-size:12.5px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INCIDENCIA — cualquier rol puede crear -->
+  <!-- MODAL CONFIRMAR ELIMINAR TEST -->
+  <div id="modalConfirmarEliminar" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalConfirmarEliminar')">
+    <div class="modal-box" style="max-width:380px;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Eliminar test</h2>
+        <button class="modal-close" onclick="cerrarModal('modalConfirmarEliminar')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px 22px;">
+        <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:16px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+          <div>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0 0 4px;">¿Eliminar este test?</p>
+            <p style="font-size:13px; color:#6b7280; margin:0;" id="eliminarTestNombre"></p>
+            <p style="font-size:12px; color:#9ca3af; margin:4px 0 0;">Esta accion no se puede deshacer.</p>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button class="btn btn-secondary" onclick="cerrarModal('modalConfirmarEliminar')">Cancelar</button>
+          <button class="btn" style="background:#dc2626; color:white; border:none;" onclick="ejecutarEliminarTest()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER FORMATO (solo lectura, espejo del documento) -->
+  <div id="modalVerFormato" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalVerFormato')">
+    <div class="modal-box" style="max-width:860px; width:calc(100vw - 32px); max-height:92vh; padding:0; overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e4976 0%,#1a3a5c 100%); border-radius:16px 16px 0 0;">
+        <div>
+          <h2 id="verFormatoTitulo" style="font-size:15px; font-weight:800; color:white; margin:0;">Documento</h2>
+          <p style="font-size:11px; color:#cfe0ff; margin:2px 0 0;">Solo lectura · no editable</p>
+        </div>
+        <button class="modal-close" style="color:white;" onclick="cerrarModal('modalVerFormato')">&times;</button>
+      </div>
+      <div class="modal-body" id="verFormatoBody" style="max-height:calc(92vh - 90px); overflow-y:auto; padding:16px 20px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL NUEVO FORMATO -->
+  <div id="modalNuevoFormato" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalNuevoFormato')">
+    <div class="modal-box" style="max-width:520px;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Nuevo formato</h2>
+        <button class="modal-close" onclick="cerrarModal('modalNuevoFormato')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:16px 20px;">
+        <div style="display:grid; gap:10px;">
+          <div class="form-group"><label>Tipo</label><select id="nuevoFormatoTipo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="ficha_diagnostica">Ficha Diagnóstica</option><option value="consentimiento">Consentimiento</option><option value="acta_compromiso">Acta Compromiso</option><option value="entrevista_estudiante">Entrevista Estudiante</option><option value="entrevista_padre">Entrevista Padre</option><option value="ficha_estudiante">Ficha Estudiante</option><option value="visita_domiciliaria">Visita Domiciliaria</option><option value="derivacion_interna">Derivación Interna</option><option value="derivacion_externa">Derivación Externa</option><option value="seguimiento">Seguimiento</option></select></div>
+          <div class="form-group"><label>Fecha</label><input id="nuevoFormatoFecha" type="date" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></div>
+          <div id="nuevoFormatoCampos" style="display:grid; gap:10px; border:1px solid #e5e7eb; border-radius:8px; padding:12px; background:#f9fafb;"></div>
+          <div class="form-group"><label>Archivo (opcional, para actas con firma)</label><input id="nuevoFormatoArchivo" type="file" accept=".pdf,.jpg,.png" style="width:100%; font-size:13px;"></div>
+        </div>
+        <div id="nuevoFormatoMsg" style="margin-top:10px; font-size:12.5px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; border-top:1px solid #e5e7eb; padding-top:12px;">
+          <button class="btn btn-secondary" onclick="cerrarModal('modalNuevoFormato')">Cancelar</button>
+          <button class="btn btn-primary" onclick="crearNuevoFormato()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST PROFESIONAL (reemplaza alert nativo) -->
+  <div id="toastContainer" style="position:fixed; top:18px; right:18px; z-index:10000; display:flex; flex-direction:column; gap:8px; pointer-events:none;"></div>
+
+  <script src="../js/vendor/docx.min.js?v=2"></script>
+  <script src="../js/vendor/FileSaver.min.js?v=2"></script>
+  <script src="../js/config.js?v=2"></script>
+  <script src="../js/core/utils.js?v=2"></script>
+  <script src="../js/core/api.js?v=2"></script>
+  <script src="../js/modulos/mensajes.js?v=2"></script>
+  <script src="../js/modulos/incidentes.js?v=2"></script>
+  <script src="../js/modulos/psicologia.js?v=5"></script>
+  <script src="../js/modulos/expediente.js?v=6"></script>
+  <script src="../js/modulos/expediente_formatos.js?v=5"></script>
+  <script src="../js/modulos/ficha_diagnostica.js?v=5"></script>
+</body>
+</html>

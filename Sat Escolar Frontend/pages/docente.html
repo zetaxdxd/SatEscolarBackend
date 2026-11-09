@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT Escolar | Docente</title>
+  <link rel="stylesheet" href="../css/theme-school.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/docente-portal.css?v=fullwidth-20260913">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body class="teacher-v2-body" onload="validarAcceso('docente'); cargarTema(); inicializarPanelDocente();">
+  <button class="sidebar-toggle" aria-label="Menú" onclick="document.body.classList.toggle('sidebar-open')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <div class="teacher-v2-layout">
+    <aside class="app-sidebar" onclick="if(window.innerWidth<=768) document.body.classList.remove('sidebar-open')">
+      <div class="sidebar-brand">
+        <img src="../assets/img/colegio/escudo-ofelia.png" alt="Escudo SAT" style="width:50px;height:55px;object-fit:contain;">
+        <div>
+          <h1>SAT Escolar</h1>
+          <span>SISTEMA DE ALERTA TEMPRANA</span>
+        </div>
+      </div>
+      <div class="user-card">
+        <div class="avatar-container">
+          <svg class="avatar-icon" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="user-info">
+          <span class="greeting">Hola,</span>
+          <span class="name" id="sidebarUserName">Cargando...</span>
+          <span class="user-badge" id="sidebarUserRole">DOCENTE</span>
+        </div>
+      </div>
+      <div class="sidebar-menu-title">Panel</div>
+      <nav class="sidebar-nav">
+        <a href="#" onclick="mostrarSeccionDocente('doc-salones')" class="active">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg></div>
+          <span>Inicio</span>
+        </a>
+        <a href="#" data-section="doc-notas" onclick="abrirModuloNotasDocente()">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+          <span>Notas</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionDocente('doc-cuestionarios')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></div>
+          <span>Cuestionarios</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionDocente('doc-evidencias')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5Z"/></svg></div>
+          <span>Evidencias</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionDocente('doc-tutoria')" id="navTutoriaRegistro" class="solo-tutor">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <span>Registrar estudiante</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionDocente('doc-asistencias')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg></div>
+          <span>Asistencias</span>
+        </a>
+        <a href="#" onclick="abrirModalIncidencia()">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+          <span>Incidencia</span>
+        </a>
+      </nav>
+            <div class="logout">
+        <button class="logout-btn" onclick="cerrarSesion()">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </div>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <header class="teacher-v2-topbar teacher-commandbar">
+        <div id="barraDocSalones" class="teacher-commandbar-view teacher-commandbar-filters">
+          <label>Año escolar
+            <select id="portalDocenteAnio" onchange="filtrarPortalDocente()">
+              <option value="">Cargando...</option>
+            </select>
+          </label>
+          <label>Salón
+            <select id="portalDocenteGrado" onchange="filtrarPortalDocente()">
+              <option value="">Cargando...</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="barraDocAsistencia" class="teacher-commandbar-view teacher-commandbar-action oculto">
+          <button type="button" class="teacher-portal-back" onclick="mostrarSeccionDocente('doc-salones')">← Mis cursos</button>
+          <div class="teacher-commandbar-metric">
+            <strong id="totalSalonDocente">0</strong>
+            <span>estudiantes en el salón</span>
+          </div>
+        </div>
+
+        <div id="barraDocNotas" class="teacher-commandbar-view teacher-commandbar-detail oculto">
+          <button type="button" class="teacher-portal-back" onclick="mostrarSeccionDocente('doc-salones')">← Mis cursos</button>
+          <div>
+            <h2 id="competencyCourseTitle">Detalle de calificación</h2>
+            <p id="competencyCourseSubtitle">Selecciona un curso para gestionar sus competencias.</p>
+          </div>
+        </div>
+
+        <div id="barraDocCuestionarios" class="teacher-commandbar-view teacher-commandbar-detail oculto">
+          <button type="button" class="teacher-portal-back" onclick="mostrarSeccionDocente('doc-salones')">← Mis cursos</button>
+          <div><h2>Cuestionarios</h2><p>Gestiona los formularios asignados a tus salones.</p></div>
+        </div>
+
+        <div id="barraDocEvidencias" class="teacher-commandbar-view teacher-commandbar-detail oculto">
+          <button type="button" class="teacher-portal-back" onclick="mostrarSeccionDocente('doc-salones')">← Mis cursos</button>
+          <div><h2>Evidencias</h2><p>Consulta las evidencias recibidas para revisión.</p></div>
+        </div>
+
+        <div class="teacher-v2-current-user">
+          <img src="../assets/img/avatar.png" alt="Docente">
+          <div>
+            <span id="topbarUserRole">Docente</span>
+            <strong id="nombreDocenteTopbar">Docente</strong>
+            <small id="sidebarUserEmail" style="color:#94a3b8;font-size:0.75rem;"></small>
+          </div>
+        </div>
+      </header>
+
+      <section id="doc-inicio" class="seccion-docente teacher-v2-section oculto">
+        <article class="teacher-v2-card">
+          <div class="teacher-v2-card-head">
+            <div>
+              <h2>Lista de estudiantes</h2>
+              <p id="salonAsistenciaActual">Salón seleccionado desde Mis cursos.</p>
+              <p id="asistenciaFechaHoy" class="teacher-v2-muted" style="font-weight:700; color:#1d4ed8; margin:6px 0 0;"></p>
+              <p id="asistenciaEstadoDia" style="font-size:13px; margin:4px 0 0;"></p>
+            </div>
+            <div class="teacher-v2-actions">
+              <button class="teacher-v2-small-btn oculto" id="btnEditarAsistenciaPg" onclick="activarModoAsistencia()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg>Editar asistencia</button>
+              <button class="teacher-v2-small-btn" id="btnModoAsistencia" onclick="activarModoAsistencia()">Tomar asistencia</button>
+              <button class="teacher-v2-small-btn teacher-v2-save-inline oculto" id="btnGuardarAsistenciaPg" onclick="guardarAsistenciaPostgres()">Guardar asistencia</button>
+            </div>
+          </div>
+
+          <div class="teacher-v2-table-wrap">
+            <table class="teacher-v2-table">
+              <thead>
+                <tr>
+                  <th>Estudiante</th>
+                  <th>Correo electrónico</th>
+                  <th class="doc-asistencia-head oculto">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tablaRegistroDocente">
+                <tr><td colspan="5" class="teacher-v2-empty">Selecciona Asistencia desde uno de tus cursos.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <p class="teacher-v2-note">
+          La asistencia registrada será enviada automáticamente al sistema para su revisión institucional.
+        </p>
+      </section>
+
+      <section id="doc-salones" class="seccion-docente teacher-v2-section teacher-portal-section">
+        <div class="teacher-portal-workspace">
+          <section class="teacher-course-panel">
+            <header class="teacher-course-heading">
+              <div>
+                <h2>Mis cursos</h2>
+                <p>Cursos y secciones asignados para el periodo seleccionado.</p>
+              </div>
+              <span id="portalDocenteTotalCursos" class="teacher-course-count">0</span>
+            </header>
+            <div id="docCursosGrid" class="teacher-course-list">
+              <p class="teacher-portal-empty">Cargando tus cursos...</p>
+            </div>
+          </section>
+
+          <section class="teacher-schedule" aria-label="Horario semanal">
+            <header class="teacher-schedule-header">
+              <div>
+                <span class="teacher-schedule-icon">▣</span>
+                <h2>Horario</h2>
+              </div>
+              <span>Vista semanal</span>
+            </header>
+            <div class="teacher-schedule-toolbar">
+              <button type="button" title="Semana anterior">‹</button>
+              <button type="button">Hoy</button>
+              <button type="button" title="Semana siguiente">›</button>
+              <strong id="portalSemanaActual">Semana actual</strong>
+            </div>
+            <div class="teacher-schedule-scroll">
+              <div class="teacher-schedule-grid">
+                <div class="teacher-schedule-corner"></div>
+                <div class="teacher-schedule-day">Lunes</div>
+                <div class="teacher-schedule-day">Martes</div>
+                <div class="teacher-schedule-day">Miércoles</div>
+                <div class="teacher-schedule-day">Jueves</div>
+                <div class="teacher-schedule-day">Viernes</div>
+                <div class="teacher-schedule-day">Sábado</div>
+
+                <div class="teacher-schedule-time">8 a. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+                <div class="teacher-schedule-time">9 a. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+                <div class="teacher-schedule-time">10 a. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+                <div class="teacher-schedule-time">11 a. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+                <div class="teacher-schedule-time">12 p. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+                <div class="teacher-schedule-time">1 p. m.</div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div><div class="teacher-schedule-cell"></div>
+              </div>
+            </div>
+            <p class="teacher-schedule-status">Horario pendiente de configuración.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="doc-notas" class="seccion-docente teacher-v2-section oculto">
+        <section class="competency-programming notas-simples-card">
+          <header>
+            <div>
+              <h3>Mis notas por campos</h3>
+              <p>Agrega tus campos de evaluación (nombre y nota). Los promedios se calculan por bimestre.</p>
+            </div>
+          </header>
+          <div class="teacher-v2-filters" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+            <div class="form-group">
+              <label>Sección</label>
+              <select id="nsSeccion" class="form-control" onchange="cargarCursosNotasSimples()"></select>
+            </div>
+            <div class="form-group">
+              <label>Curso</label>
+              <select id="nsCurso" class="form-control" onchange="cargarNotasSimples()"></select>
+            </div>
+            <div class="form-group">
+              <label>Bimestre</label>
+              <select id="nsTrimestre" class="form-control" onchange="cargarNotasSimples()"></select>
+            </div>
+            <div class="form-group" style="align-self:end;">
+              <button type="button" class="teacher-v2-small-btn" onclick="agregarCampoNota()">＋ Agregar campo</button>
+            </div>
+            <div class="form-group" style="align-self:end;">
+              <input type="file" id="excelNotasInput" accept=".xlsx,.xls,.csv" class="oculto" onchange="procesarExcelNotas(event)">
+              <button type="button" class="teacher-v2-small-btn" onclick="subirExcelNotas()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir Excel de notas</button>
+            </div>
+          </div>
+          <p id="msgExcelNotas" class="msg-err" style="font-size:13px; margin:0 0 8px;"></p>
+          <p id="nsResumen" style="font-size:13px; color:#4b5563; margin:0 0 10px;"></p>
+          <div id="nsCampos" class="notas-simples-campos"></div>
+          <div class="teacher-v2-table-wrap">
+            <table class="teacher-v2-table notas-simples-table">
+              <thead id="nsTablaHead"></thead>
+              <tbody id="tablaNotasSimples">
+                <tr><td class="teacher-v2-empty">Selecciona sección, curso y bimestre.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="teacher-v2-muted" id="nsPromedioAyuda">Cada campo se evalúa con una letra (AD, A, B o C). El promedio del bimestre se calcula solo y no se puede editar. Las observaciones alimentan la evaluación de riesgo del estudiante.</p>
+          <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+            <button class="teacher-v2-small-btn teacher-v2-save-inline" onclick="guardarNotasSimples()">Guardar notas</button>
+            <button class="teacher-v2-small-btn" style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca;" onclick="solicitarEliminarNotas()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Eliminar notas de este bimestre</button>
+          </div>
+          <div id="eliminarNotasBox" class="codigo-box oculto" style="margin-top:12px;">
+            <p style="font-size:13px; font-weight:600; margin-bottom:8px;">Verificación para eliminar notas del bimestre <span id="eliminarNotasBimestreLabel"></span></p>
+            <p style="font-size:12px; color:#6b7280;">Se enviará un código a tu correo: <strong id="eliminarNotasCorreoDest"></strong></p>
+            <div class="form-group eye-wrap" style="margin-top:8px;">
+              <label>Confirma tu contraseña</label>
+              <input id="eliminarNotasPassword" type="password" placeholder="Tu contraseña" style="width:100%; padding:8px 40px 8px 8px; border:1px solid #d1d5db; border-radius:6px;">
+              <button class="password-toggle" type="button" aria-label="Mostrar contraseña" onclick="alternarPassword(this)"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+            <button class="teacher-v2-small-btn" onclick="enviarCodigoEliminarNotas()" style="margin-top:8px;">Enviar código a mi correo</button>
+            <div id="eliminarNotasCodigoBox" class="oculto" style="margin-top:10px;">
+              <label style="font-size:13px; font-weight:600;">Código enviado a <span id="eliminarNotasEmailDest"></span></label>
+              <div style="display:flex; gap:8px; margin-top:6px;">
+                <input id="eliminarNotasCodigo" placeholder="6 dígitos" maxlength="6" style="flex:1; padding:8px; border:1px solid #d1d5db; border-radius:6px; text-align:center; letter-spacing:4px;">
+                <button class="teacher-v2-small-btn" style="background:#dc2626; color:white;" onclick="verificarYEliminarNotas()">Verificar y eliminar</button>
+              </div>
+            </div>
+            <p id="msgEliminarNotas" class="msg-err" style="font-size:13px; margin-top:8px;"></p>
+          </div>
+        </section>
+
+        <section class="achievement-formula">
+          <button type="button" class="achievement-formula-title" onclick="toggleEscalaLogro()">
+            <span>Fórmula de criterios de evaluación</span>
+            <span id="achievementFormulaChevron">⌃</span>
+          </button>
+          <div id="achievementFormulaBody" class="achievement-formula-body">
+            <div class="achievement-formula-summary">
+              <div>
+                <span>Curso</span>
+                <strong id="formulaCurso">-</strong>
+              </div>
+              <div>
+                <span>Sección</span>
+                <strong id="formulaSeccion">-</strong>
+              </div>
+              <div>
+                <span>Modalidad</span>
+                <strong>Evaluación por competencias</strong>
+              </div>
+            </div>
+            <div id="nivelesLogroGridFijo" class="achievement-level-grid">
+              <article class="achievement-level achievement-destacado">
+                <span>AD</span>
+                <div><h3>Logro destacado</h3><p>El estudiante evidencia un nivel superior a lo esperado respecto a la competencia y demuestra aprendizajes que van más allá del nivel esperado.</p></div>
+              </article>
+              <article class="achievement-level achievement-a">
+                <span>A</span>
+                <div><h3>Logro esperado</h3><p>El estudiante evidencia el nivel esperado respecto a la competencia, demostrando manejo satisfactorio en las tareas propuestas y en el tiempo programado.</p></div>
+              </article>
+              <article class="achievement-level achievement-b">
+                <span>B</span>
+                <div><h3>En proceso</h3><p>El estudiante está próximo o cerca al nivel esperado respecto a la competencia y requiere acompañamiento durante un tiempo razonable para lograrlo.</p></div>
+              </article>
+              <article class="achievement-level achievement-c">
+                <span>C</span>
+                <div><h3>En inicio</h3><p>El estudiante muestra un progreso mínimo en la competencia, evidencia dificultades y necesita mayor tiempo de acompañamiento e intervención docente.</p></div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="doc-cuestionarios" class="seccion-docente teacher-v2-section oculto">
+        <article class="teacher-v2-card">
+          <div class="teacher-v2-card-head">
+            <div>
+              <h2>Cuestionarios recibidos</h2>
+              <p>Formularios enviados por psicopedagogía para tus secciones. Actívalos para que tus estudiantes puedan responder.</p>
+            </div>
+          </div>
+          <div class="teacher-v2-status-row">
+            <span>Cuestionarios activos</span>
+            <strong id="docCuestionariosActivosVista">0</strong>
+          </div>
+          <div class="teacher-v2-status-row">
+            <span>Cuestionarios pendientes</span>
+            <strong id="docCuestionariosFinalizadosVista">0</strong>
+          </div>
+          <div class="teacher-v2-table-wrap" style="margin-top:16px;">
+            <table class="teacher-v2-table">
+              <thead>
+                <tr><th>Formulario</th><th>Sección</th><th>Preguntas</th><th>Estado</th><th>Respuestas</th><th>Acción</th></tr>
+              </thead>
+              <tbody id="tablaFormulariosDocente">
+                <tr><td colspan="6" class="teacher-v2-empty">Sin formularios asignados.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section id="doc-evidencias" class="seccion-docente teacher-v2-section oculto">
+        <article class="teacher-v2-card">
+          <h2>Nuevas evidencias recibidas</h2>
+          <div class="teacher-v2-evidence-count">
+            <strong id="docEvidenciasPendientesVista">0</strong>
+            <span>pendientes</span>
+          </div>
+          <button class="teacher-v2-small-btn" onclick="abrirResumenEvidenciasDocente()">Ver evidencias</button>
+          <p class="teacher-v2-muted">El contenido sensible será revisado por el área psicopedagógica.</p>
+        </article>
+      </section>
+
+      <section id="doc-tutoria" class="seccion-docente teacher-v2-section oculto">
+        <article class="teacher-v2-card">
+          <h2>Registrar estudiantes (tutoría)</h2>
+          <p class="teacher-v2-muted">Primero indica qué salón vas a registrar y luego matrículas a sus estudiantes. Cada salón registrado lo verá el área psicopedagógica.</p>
+
+          <div id="pasoSalonTutor" style="margin-top:14px;">
+            <div class="form-group">
+              <label>¿Qué salón vas a registrar?</label>
+              <select id="tutorSeccionRegistro" class="form-control"></select>
+            </div>
+            <p id="msgSalonTutor" class="msg-err" style="font-size:13px;"></p>
+            <button type="button" class="teacher-v2-small-btn" onclick="continuarRegistroSalon()">Continuar →</button>
+          </div>
+
+          <div id="pasoEstudiantesTutor" class="oculto">
+            <h3 style="margin:6px 0 4px;">Registrando estudiantes de <span id="tutorSalonActualTxt" style="color:#0b66e8;"></span></h3>
+            <p class="teacher-v2-muted">Completa los datos y envíale el código de verificación a su correo.</p>
+            <button type="button" class="teacher-v2-small-btn" id="btnCambiarSalon" onclick="volverSeleccionSalonTutor()" style="margin-bottom:12px;">← Cambiar salón</button>
+
+            <div class="admin-grid">
+              <div class="form-group span2"><label>Nombres</label><input id="tutorEstNombre" class="form-control" placeholder="Nombres del estudiante"></div>
+              <div class="form-group span2"><label>Apellidos</label><input id="tutorEstApellido" class="form-control" placeholder="Apellidos del estudiante"></div>
+              <div class="form-group"><label>Correo</label><input id="tutorEstCorreo" class="form-control" placeholder="nombre.apellido@ofelia.edu.pe" onblur="verificarCorreoEnCreacion('tutorEstCorreo','msgRegistroTutor')"></div>
+              <div class="form-group eye-wrap"><label>Contraseña *</label><input id="tutorEstPassword" type="password" class="form-control" placeholder="Mín. 8, mayúscula, minúscula, número" oninput="validarPautasPassword('tutorEstPassword','pautasEst')"><button class="password-toggle" type="button" aria-label="Mostrar contraseña" onclick="alternarPassword(this)"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button><div id="pautasEst" class="pautas"></div></div>
+            </div>
+            <div class="admin-grid" style="margin-top:12px;">
+              <div class="form-group eye-wrap span2"><label>Confirmar contraseña *</label><input id="tutorEstPasswordConfirm" type="password" class="form-control" placeholder="Repite la contraseña"><button class="password-toggle" type="button" aria-label="Mostrar contraseña" onclick="alternarPassword(this)"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+
+            </div>
+            <p id="msgRegistroTutor" class="msg-err" style="font-size:13px;"></p>
+            <div id="codigoEstBox" class="codigo-box oculto">
+              <label style="font-size:13px;font-weight:600;">Código enviado a <span id="codigoEstEmail" style="color:#063b91;"></span></label>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <input id="codigoEst" placeholder="6 dígitos" maxlength="6" style="flex:1; padding:10px 14px; border:1px solid #d1d5db; border-radius:8px; font-size:16px; letter-spacing:4px; text-align:center;">
+                <button class="teacher-v2-small-btn" onclick="verificarYCrearEstudiante()" type="button">Verificar y crear</button>
+              </div>
+              <small style="color:#6b7280;">Revisa bandeja y spam. Expira en 10 minutos</small>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:12px;">
+              <button class="teacher-v2-small-btn" onclick="solicitarCodigoEstudiante()" type="button" id="btnSolicitarEst">Enviar código al correo</button>
+              <button class="teacher-v2-small-btn oculto" onclick="registrarEstudianteTutor()" type="button" id="btnCrearEstDirecto">Crear sin verificar (dev)</button>
+            </div>
+
+            <div style="margin-top:22px; border-top:1px solid #e2e8f0; padding-top:16px;">
+              <h3 style="margin:0 0 4px;">Subir lista de estudiantes desde Excel</h3>
+              <p class="teacher-v2-muted" style="margin:0 0 10px;">Tu Excel debe tener columnas de nombres, apellidos (o "estudiante"), correo y contraseña. Se cargan todos de una vez y puedes corregir cada fila antes de registrar.</p>
+              <input type="file" id="excelEstudiantesInput" accept=".xlsx,.xls,.csv" class="oculto" onchange="procesarExcelEstudiantes(event)">
+              <button type="button" class="teacher-v2-small-btn" onclick="subirExcelEstudiantes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Subir Excel de estudiantes</button>
+              <button type="button" class="teacher-v2-small-btn" onclick="descargarPlantillaEstudiantes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:-2px;margin-right:3px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Ver plantilla ejemplo</button>
+              <div id="vistaPreviaExcelEstudiantes"></div>
+              <button type="button" id="btnRegistrarTodosExcel" class="teacher-v2-small-btn teacher-v2-save-inline oculto" onclick="registrarTodosEstudiantesExcel()">Registrar todos (0)</button>
+            </div>
+
+            <div style="margin-top:22px;">
+              <h3 style="margin:0 0 4px;">Estudiantes de este salón</h3>
+              <p class="teacher-v2-muted" style="margin:0 0 6px;">Puedes editar el nombre o el correo de cualquier estudiante si algo salió mal.</p>
+              <div id="listaEstudiantesTutor"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section id="doc-asistencias" class="seccion-docente teacher-v2-section oculto">
+        <article class="teacher-v2-card">
+          <h2>Registro de asistencias</h2>
+          <p class="teacher-v2-muted">Busca un día específico o revisa el historial acumulado día por día.</p>
+          <div class="teacher-v2-filters" style="display:flex; gap:12px; margin:14px 0; flex-wrap:wrap;">
+            <div class="form-group">
+              <label>Día</label>
+              <input type="date" id="regAsisFecha" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Sección</label>
+              <select id="regAsisSeccion" class="form-control" onchange="cargarHistorialFechas()"><option value="">Todas</option></select>
+            </div>
+            <div class="form-group" style="align-self:end;">
+              <button type="button" class="teacher-v2-small-btn" onclick="buscarFechaRegistro()">Buscar</button>
+            </div>
+          </div>
+          <div id="regAsisDetalle" class="oculto">
+            <button type="button" class="teacher-v2-small-btn" onclick="volverHistorialRegistro()" style="margin-bottom:12px;">← Volver al historial</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <h3 id="regAsisDetalleTitulo" style="margin:0;"></h3>
+              <div id="regAsisDetalleAcciones" style="display:flex; gap:8px;"></div>
+            </div>
+            <div id="regAsisResumen" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;"></div>
+            <div id="regAsisEditMsg" style="font-size:12px; min-height:18px; margin-bottom:8px;"></div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Estudiante</th><th>Sección</th><th>Estado</th></tr>
+                </thead>
+                <tbody id="tablaRegistroAsistencias">
+                  <tr><td colspan="4" class="teacher-v2-empty">Sin datos.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div id="regAsisHistWrap" style="margin-top:6px;">
+            <h3 style="margin:0 0 8px;">Historial por días</h3>
+            <div id="regAsisHistorial" style="display:grid; gap:10px;"></div>
+          </div>
+        </article>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="modalResumenEvidenciasDocente" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalResumenEvidenciasDocente')">
+    <div class="modal-box teacher-v2-modal">
+      <div class="modal-header">
+        <h2>Evidencias recibidas</h2>
+        <button class="modal-close" onclick="cerrarModal('modalResumenEvidenciasDocente')">x</button>
+      </div>
+      <div class="modal-body">
+        <p class="teacher-v2-muted">Hay <strong id="modalEvidenciasPendientes">0</strong> evidencias pendientes. El detalle será revisado por el área psicopedagógica.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalEditarAsistencia" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalEditarAsistencia')">
+    <div class="modal-box teacher-v2-modal">
+      <div class="modal-header">
+        <h2>Editar asistencia</h2>
+        <button class="modal-close" onclick="cerrarModal('modalEditarAsistencia')">x</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editAsistenciaEstudianteId">
+        <input type="hidden" id="editAsistenciaFecha">
+        <p class="teacher-v2-muted" id="editAsistenciaEstudianteNombre"></p>
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="editAsistenciaEstado">
+            <option>Asistió</option>
+            <option>Tardanza</option>
+            <option>Faltó</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Observación opcional</label>
+          <textarea id="editAsistenciaObservacion" placeholder="Ejemplo: El estudiante justificó la falta al día siguiente."></textarea>
+        </div>
+        <button class="teacher-v2-save" onclick="guardarEdicionAsistencia()">Guardar cambio</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/core/api.js"></script>
+  <script src="../js/modulos/asistencia.js"></script>
+  <script src="../js/modulos/evaluacion.js"></script>
+  <script src="../js/modulos/notas.js"></script>
+  <script src="../js/modulos/tutoria.js"></script>
+  <script src="../js/modulos/excel.js"></script>
+  <script>
+    (function fijarEscalaLogroCompleta() {
+      const niveles = [
+        ["AD", "Logro destacado", "El estudiante evidencia un nivel superior a lo esperado respecto a la competencia y demuestra aprendizajes que van más allá del nivel esperado."],
+        ["A", "Logro esperado", "El estudiante evidencia el nivel esperado respecto a la competencia, demostrando manejo satisfactorio en las tareas propuestas y en el tiempo programado."],
+        ["B", "En proceso", "El estudiante está próximo o cerca al nivel esperado respecto a la competencia y requiere acompañamiento durante un tiempo razonable para lograrlo."],
+        ["C", "En inicio", "El estudiante muestra un progreso mínimo en la competencia, evidencia dificultades y necesita mayor tiempo de acompañamiento e intervención docente."]
+      ];
+      window.renderNivelesLogro = function renderNivelesLogroFijo() {
+        const contenedor = document.getElementById("nivelesLogroGridFijo");
+        if (!contenedor) return;
+        contenedor.innerHTML = niveles.map(([codigo, nombre, descripcion]) => `
+          <article class="achievement-level ${codigo === "AD" ? "achievement-destacado" : `achievement-${codigo.toLowerCase()}`}">
+            <span>${codigo}</span>
+            <div><h3>${nombre}</h3><p>${descripcion}</p></div>
+          </article>
+        `).join("");
+      };
+      window.renderNivelesLogro();
+    })();
+  </script>
+  <!-- MODAL INCIDENCIA — cualquier rol puede crear -->
+  <div id="modalIncidencia" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalIncidencia')">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Registrar incidencia</h2>
+        <button class="modal-close" onclick="cerrarModal('modalIncidencia')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:16px 20px;">
+        <div style="display:grid; gap:10px;">
+          <div class="form-group" style="position:relative;">
+            <label>Estudiante *</label>
+            <input id="incBuscarEstudiante" type="text" placeholder="Escribe nombre y apellidos..." autocomplete="off" oninput="onIncBuscarInput(this.value)" onfocus="onIncBuscarFocus()" onblur="setTimeout(()=>{const s=document.getElementById('incSugerencias'); if(s) s.style.display='none'}, 200)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+            <input type="hidden" id="incEstudianteIdHidden">
+            <div id="incSugerencias" style="position:absolute; top:62px; left:0; right:0; background:white; border:1px solid #d1d5db; border-radius:8px; max-height:160px; overflow-y:auto; display:none; z-index:10; box-shadow:0 8px 16px rgba(0,0,0,0.08);"></div>
+            <div style="font-size:10px; color:#9ca3af; margin-top:4px;">Escribe 2 letras y elige. Se auto-completa grado y sección.</div>
+            <select id="incEstudianteId" style="display:none;"><option value="">Seleccionar</option></select>
+          </div>
+          <div class="form-group"><label>Sección (auto)</label><select id="incSeccionId" onchange="cargarEstudiantesIncidencia(this.value)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:#f9fafb;"><option value="">Se asigna al elegir estudiante</option></select></div>
+          <div class="form-group"><label>Tipo *</label><select id="incTipo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="">Seleccionar</option><option value="tardanza_reiterada">Tardanza reiterada</option><option value="falta_injustificada">Falta injustificada</option><option value="agresion">Agresión</option><option value="vandalismo">Vandalismo</option><option value="consumo_sospecha">Consumo sospecha</option><option value="desinteres">Desinterés</option><option value="otro">Otro</option></select></div>
+          <div class="form-group"><label>Descripción *</label><input id="incDescripcion" type="text" placeholder="Ej: Pelea en recreo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></div>
+          <div class="form-group"><label>Observación</label><textarea id="incObservacion" rows="2" placeholder="Detalle, contexto, testigos..." style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></textarea></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group"><label>Derivar a (opcional)</label><select id="incDerivarA" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="">Sin derivación</option><option value="psicologo">Psicólogo</option><option value="tutor">Tutor</option><option value="direccion">Dirección</option></select></div>
+            <div class="form-group"><label>Informe derivación</label><input id="incMotivoDerivacion" type="text" placeholder="Motivo breve" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></div>
+          </div>
+        </div>
+        <div id="incMsg" style="margin-top:10px; font-size:12.5px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; border-top:1px solid #e5e7eb; padding-top:12px;">
+          <button class="btn btn-secondary" onclick="cerrarModal('modalIncidencia')">Cancelar</button>
+          <button class="btn btn-primary" onclick="crearIncidencia()">Guardar incidencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/modulos/expediente.js"></script>
+</body>
+</html>

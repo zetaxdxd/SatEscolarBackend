@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT Escolar | Estudiante</title>
+  <link rel="stylesheet" href="../css/theme-school.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body class="student-body" onload="validarAcceso('estudiante'); cargarTema(); inicializarPanelEstudiante();">
+
+  <button id="btnTema" class="theme-icon student-theme" onclick="cambiarTema()" title="Cambiar tema">Luna</button>
+
+  <div class="student-layout">
+
+    <aside class="app-sidebar">
+      <div class="sidebar-brand">
+        <img src="../assets/img/colegio/escudo-ofelia.png" alt="Escudo SAT" style="width:50px;height:55px;object-fit:contain;">
+        <div>
+          <h1>SAT Escolar</h1>
+          <span>SISTEMA DE ALERTA TEMPRANA</span>
+        </div>
+      </div>
+      <div class="user-card">
+        <div class="avatar-container">
+          <svg class="avatar-icon" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="user-info">
+          <span class="greeting">Hola,</span>
+          <span class="name" id="sidebarUserName">Estudiante</span>
+          <span class="user-badge" id="sidebarUserRole">ESTUDIANTE</span>
+        </div>
+      </div>
+      <div class="sidebar-menu-title">Panel</div>
+      <nav class="sidebar-nav">
+        <a href="#" onclick="mostrarSeccionEstudiante('est-inicio')" class="active">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg></div>
+          <span>Inicio</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionEstudiante('est-cuestionarios')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></div>
+          <span>Cuestionarios</span>
+        </a>
+        <a href="#" onclick="abrirModalReporteAnonimo()">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <span>Reporte anonimo</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionEstudiante('est-chat')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5Z"/></svg></div>
+          <span>Chat anonimo</span>
+        </a>
+        <a href="#" onclick="mostrarSeccionEstudiante('est-perfil')">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <span>Mi perfil</span>
+        </a>
+        <a href="#" onclick="abrirMiFicha()">
+          <div class="sidebar-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <span>Ficha Diagnóstica</span>
+        </a>
+      </nav>
+            <div class="logout">
+        <button class="logout-btn" onclick="cerrarSesion()">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </div>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <header class="student-topbar">
+        <div>
+          <h1 id="saludoEstudiante">¡Hola, Estudiante!</h1>
+          <p>Bienvenido a tu panel estudiantil</p>
+        </div>
+        <div class="student-top-actions">
+          <button class="student-evidence-btn" onclick="abrirModalReporteAnonimo()">
+            <span class="student-evidence-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+            <span><strong>Enviar evidencia anonima</strong><small>Comparte algo de forma segura</small></span>
+          </button>
+          <div class="student-avatar-wrap">
+            <img src="../assets/img/avatar.png" alt="Avatar del estudiante">
+            <span></span>
+          </div>
+        </div>
+      </header>
+
+      <section id="est-inicio" class="seccion-estudiante student-section">
+        <div class="student-grid">
+          <article id="cuestionarioActivoCard" class="student-card student-card-large student-active-card">
+            <div class="student-card-title-row">
+              <span class="student-circle-icon student-green-icon">▣</span>
+              <div>
+                <h2>Cuestionario activo</h2>
+                <p id="estadoCuestionarioResumen">Revisando si tienes formularios pendientes.</p>
+              </div>
+            </div>
+            <div class="student-questionnaire-box">
+              <div>
+                <h3 id="estadoCuestionarioTitulo">Cargando cuestionario...</h3>
+                <div id="detalleCuestionarioActivo" class="student-questionnaire-detail">
+                  <p>Estamos revisando si tienes un formulario disponible.</p>
+                </div>
+              </div>
+              <span id="estadoCuestionarioBadge" class="student-status">Pendiente</span>
+              <div class="student-questionnaire-action">
+                <button id="btnResponderCuestionario" class="student-primary-btn oculto" onclick="mostrarSeccionEstudiante('est-cuestionarios')">
+                  ▣ Responder cuestionario
+                </button>
+                <span class="student-chevron">›</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="student-card student-wellbeing-card">
+            <div class="student-wellbeing-copy">
+              <span class="student-circle-icon student-blue-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+              <div>
+                <h2>Tu bienestar importa</h2>
+                <p>Responde con sinceridad, tus respuestas son confidenciales y nos ayudan a apoyarte mejor.</p>
+              </div>
+            </div>
+            <div class="student-wellbeing-art" aria-hidden="true">
+              <span class="cloud cloud-one"></span>
+              <span class="cloud cloud-two"></span>
+              <span class="leaf leaf-left"></span>
+              <span class="leaf leaf-right"></span>
+              <span class="face"></span>
+              <span class="hill"></span>
+            </div>
+          </article>
+        </div>
+
+        <article class="student-card student-history-card">
+          <div class="student-card-title-row">
+            <span class="student-circle-icon student-blue-icon">▤</span>
+            <div>
+              <h2>Historial de cuestionarios</h2>
+              <p>Aquí puedes ver los formularios que ya respondiste.</p>
+            </div>
+          </div>
+          <div class="student-table-wrap">
+            <table class="student-table">
+              <thead>
+                <tr>
+                  <th>Nombre del cuestionario</th>
+                  <th>Fecha respondida</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tablaHistorialEstudiante">
+                <tr>
+                  <td colspan="4" class="student-empty">Sin cuestionarios respondidos todavía.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button class="student-history-more" type="button">Ver historial completo⌄</button>
+        </article>
+
+        <footer class="student-footer">
+          <span>SAT Escolar © 2025</span>
+          <span>Educación que acompaña, prevención que transforma.</span>
+        </footer>
+      </section>
+
+      <section id="est-cuestionarios" class="seccion-estudiante student-section oculto">
+        <article id="sinFormulario" class="student-card student-empty-card oculto">
+          <h2>Sin cuestionario activo</h2>
+          <p>Cuando tu docente o psicólogo habilite un formulario, aparecerá aquí.</p>
+        </article>
+
+        <div id="contenidoFormulario" class="student-form-panel oculto">
+          <article class="student-card">
+            <div class="student-card-head">
+              <div>
+                <span class="student-kicker">Cuestionario activo</span>
+                <h2>Cuestionario socioemocional</h2>
+              </div>
+              <span class="student-status">Pendiente</span>
+            </div>
+            <p class="student-muted">Responde con calma y sinceridad. Tus respuestas son confidenciales.</p>
+            <p class="student-group-line">Grupo: <span id="grupoInfo">-</span></p>
+          </article>
+
+          <article class="student-card student-form-card">
+            <div id="preguntasFormularioEstudiante"></div>
+
+            <button class="student-primary-btn" onclick="enviarFormularioEstudiante()">Enviar respuestas</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="est-perfil" class="seccion-estudiante student-section oculto">
+        <article class="student-card student-profile-card">
+          <img src="../assets/img/avatar.png" alt="Avatar del estudiante">
+          <div>
+            <span class="student-kicker">Mi perfil</span>
+            <h2 id="nombreEstudiantePerfil">Estudiante</h2>
+            <p>SAT Escolar mantiene este panel enfocado en tus cuestionarios y reportes anónimos.</p>
+          </div>
+        </article>
+        <article class="student-card" style="margin-top:16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <h3 style="font-size:14px; font-weight:700; color:#111827;">Mi historial</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cargarMiHistorial()" style="font-size:11px;">Actualizar</button>
+          </div>
+          <div id="historialExpedienteEstudiante" style="display:grid; gap:8px;"></div>
+        </article>
+      </section>
+
+      <section id="est-chat" class="seccion-estudiante student-section oculto">
+        <article class="student-card">
+          <span class="student-kicker">Chat anónimo</span>
+          <h2>Habla con el área psicopedagógica</h2>
+          <p style="font-size:14px; color:#6b7280;">Tu identidad está protegida. La psicóloga podrá responderte sin saber quién eres.</p>
+          <div id="chatAnonimoConversacion" style="margin-top:16px;"></div>
+          <div style="display:flex; gap:10px; margin-top:14px;">
+            <input type="text" id="chatAnonimoTexto" class="student-form-input" placeholder="Escribe tu mensaje...">
+            <button class="student-primary-btn" onclick="enviarMensajeChatAnonimo()">Enviar</button>
+          </div>
+          <button class="btn btn-danger" style="margin-top:12px;" onclick="mostrarModalEliminacionChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Eliminar todo mi chat (clave + codigo)</button>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalEliminarChat" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalEliminarChat')">
+    <div class="modal-box student-modal">
+      <div class="modal-header">
+        <h2 id="modalEliminarChatPaso">Paso 1: confirma tu contraseña</h2>
+        <button class="modal-close" onclick="cerrarModal('modalEliminarChat')">x</button>
+      </div>
+      <div class="modal-body">
+        <p class="student-modal-note" id="modalEliminarChatDescripcion"></p>
+        <div class="form-group" id="modalEliminarChatPassWrap">
+          <label>Contraseña</label>
+          <input type="password" id="modalEliminarChatPass" class="student-form-input" placeholder="Tu contraseña de acceso">
+        </div>
+        <div class="form-group oculto" id="modalEliminarChatCodigoWrap">
+          <label>Código de verificación</label>
+          <input type="text" id="modalEliminarChatCodigo" class="student-form-input" placeholder="Código de 6 dígitos">
+        </div>
+        <div id="modalEliminarChatAccion">
+          <button class="btn btn-danger" onclick="paso1EliminarChat()">Continuar</button>
+        </div>
+        <div id="modalEliminarChatPaso2" class="oculto">
+          <button class="btn btn-danger" onclick="paso2EliminarChat()">Confirmar eliminación</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FICHA DIAGNÓSTICA SOCIOEDUCATIVA OBLIGATORIA -->
+  <div id="modalPerfilObligatorio" class="modal-overlay" style="z-index:9999; background:rgba(26,58,92,0.94); display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:20px;" onclick="event.stopPropagation()">
+    <div class="modal-box" style="max-width:1000px; width:100%; max-height:94vh; overflow-y:auto; padding:0; margin:0 auto; background:transparent; border:none; box-shadow:none;">
+      <style>
+        #modalPerfilObligatorio * { margin: 0; padding: 0; box-sizing: border-box; }
+        #modalPerfilObligatorio .container { max-width: 1000px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #modalPerfilObligatorio .header { background: linear-gradient(135deg, #1e4976 0%, #1a3a5c 100%); color: white; padding: 40px 20px; text-align: center; }
+        #modalPerfilObligatorio .header h1 { font-size: 28px; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #ffffff; }
+        #modalPerfilObligatorio .header p { font-size: 14px; opacity: 0.9; }
+        #modalPerfilObligatorio .content { padding: 40px; }
+        #modalPerfilObligatorio .section { margin-bottom: 40px; border-bottom: 2px solid #ecf0f1; padding-bottom: 30px; }
+        #modalPerfilObligatorio .section:last-child { border-bottom: none; }
+        #modalPerfilObligatorio .section-title { font-size: 20px; font-weight: bold; color: #1a3a5c; margin-bottom: 25px; text-transform: uppercase; border-left: 5px solid #1a3a5c; padding-left: 15px; }
+        #modalPerfilObligatorio .form-group { margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+        #modalPerfilObligatorio .form-field { flex: 1; min-width: 250px; }
+        #modalPerfilObligatorio .form-field label { display: block; font-weight: 600; color: #2c3e50; margin-bottom: 8px; font-size: 14px; }
+        #modalPerfilObligatorio .form-field input[type="text"],
+        #modalPerfilObligatorio .form-field input[type="email"],
+        #modalPerfilObligatorio .form-field input[type="tel"],
+        #modalPerfilObligatorio .form-field input[type="date"],
+        #modalPerfilObligatorio .form-field textarea,
+        #modalPerfilObligatorio .form-field select { width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 5px; font-size: 14px; font-family: inherit; transition: all 0.3s ease; }
+        #modalPerfilObligatorio .form-field input[type="text"]:focus,
+        #modalPerfilObligatorio .form-field input[type="email"]:focus,
+        #modalPerfilObligatorio .form-field input[type="tel"]:focus,
+        #modalPerfilObligatorio .form-field input[type="date"]:focus,
+        #modalPerfilObligatorio .form-field textarea:focus,
+        #modalPerfilObligatorio .form-field select:focus { border-color: #1a3a5c; box-shadow: 0 0 5px rgba(26, 58, 92, 0.3); outline: none; }
+        #modalPerfilObligatorio .radio-group { display: flex; gap: 12px 18px; flex-wrap: wrap; margin-top: 8px; }
+        #modalPerfilObligatorio .radio-option,
+        #modalPerfilObligatorio .checkbox-option { display: flex; align-items: center; gap: 8px; }
+        #modalPerfilObligatorio .radio-option input[type="radio"],
+        #modalPerfilObligatorio .checkbox-option input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: #1a3a5c; flex-shrink: 0; }
+        #modalPerfilObligatorio .radio-option label,
+        #modalPerfilObligatorio .checkbox-option label { margin: 0; cursor: pointer; font-weight: 500; font-size: 13px; }
+        #modalPerfilObligatorio .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        #modalPerfilObligatorio .option-box { border: 1px solid #e3e8ef; background: #fbfcfe; padding: 6px 8px; border-radius: 6px; transition: all 0.3s ease; display: flex; align-items: center; gap: 7px; font-size: 12px; line-height: 1.3; }
+        #modalPerfilObligatorio .option-box label { font-size: 12px; font-weight: 500; color: #2c3e50; cursor: pointer; margin: 0; }
+        #modalPerfilObligatorio .option-box:hover { background-color: #f8f9ff; border-color: #1a3a5c; }
+        #modalPerfilObligatorio .option-box input[type="radio"],
+        #modalPerfilObligatorio .option-box input[type="checkbox"] { margin: 0; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; accent-color: #1a3a5c; }
+        #modalPerfilObligatorio .table-responsive { overflow-x: auto; margin: 20px 0; }
+        #modalPerfilObligatorio table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #bdc3c7; border-radius: 5px; overflow: hidden; }
+        #modalPerfilObligatorio table th { background-color: #1a3a5c; color: white; padding: 12px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+        #modalPerfilObligatorio table td { padding: 12px; border-bottom: 1px solid #ecf0f1; }
+        #modalPerfilObligatorio table tr:hover { background-color: #f8f9ff; }
+        #modalPerfilObligatorio table input[type="text"],
+        #modalPerfilObligatorio table input[type="email"],
+        #modalPerfilObligatorio table input[type="tel"],
+        #modalPerfilObligatorio table select { width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 3px; font-size: 13px; }
+        #modalPerfilObligatorio .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        #modalPerfilObligatorio .buttons { display: flex; gap: 10px; justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+        #modalPerfilObligatorio button { padding: 12px 30px; font-size: 16px; font-weight: 600; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
+        #modalPerfilObligatorio .btn-submit { background: linear-gradient(135deg, #1e4976 0%, #1a3a5c 100%); color: white; flex: 1; min-width: 150px; }
+        #modalPerfilObligatorio .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(26, 58, 92, 0.4); }
+        #modalPerfilObligatorio .btn-export { background: #27ae60; color: white; flex: 1; min-width: 150px; }
+        #modalPerfilObligatorio .btn-export:hover { background: #229954; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(39, 174, 96, 0.4); }
+        #modalPerfilObligatorio .subfamily-table { margin-left: 20px; margin-top: 15px; }
+        #modalPerfilObligatorio .textarea-large { min-height: 100px; resize: vertical; }
+        #modalPerfilObligatorio .form-hint { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+        #modalPerfilObligatorio .success-message { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: none; }
+        #modalPerfilObligatorio .section-counter { display: inline-block; background: #1a3a5c; color: white; width: 30px; height: 30px; border-radius: 50%; text-align: center; line-height: 30px; font-weight: bold; margin-right: 10px; font-size: 14px; }
+        @media (max-width: 768px) {
+          #modalPerfilObligatorio .content { padding: 20px; }
+          #modalPerfilObligatorio .header h1 { font-size: 22px; }
+          #modalPerfilObligatorio .form-group { flex-direction: column; }
+          #modalPerfilObligatorio .radio-group { gap: 15px; }
+          #modalPerfilObligatorio .options-grid { grid-template-columns: repeat(2, 1fr); }
+          #modalPerfilObligatorio table { font-size: 13px; }
+          #modalPerfilObligatorio table td,
+          #modalPerfilObligatorio table th { padding: 8px; }
+        }
+        @media (max-width: 560px) {
+          #modalPerfilObligatorio .options-grid { grid-template-columns: 1fr; }
+        }
+        @keyframes fichaFadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+      </style>
+      <div class="container">
+        <div class="header">
+          <h1><svg viewBox="0 0 24 24" fill="none" stroke="#f2b51d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;vertical-align:-6px;margin-right:10px;"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>Ficha Diagnóstica Socioeducativa</h1>
+          <p style="color:#ffffff;">Completa todos los campos con información veraz y detallada</p>
+        </div>
+        <div class="content">
+          <div class="success-message" id="successMsg">✓ Formulario guardado exitosamente</div>
+          <form id="fichaForm">
+            <!-- SECCIÓN 1: DATOS GENERALES -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">1</span>Datos Generales</h2>
+              <div class="row">
+                <div class="form-field">
+                  <label for="apellidos">Apellidos y Nombres</label>
+                  <input type="text" id="apellidos" name="apellidos" required>
+                </div>
+                <div class="form-field">
+                  <label for="edad">Edad</label>
+                  <input type="text" id="edad" name="edad">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="grado">Grado</label>
+                  <select id="grado" name="grado">
+                    <option value="">Selecciona...</option>
+                    <option value="1ro">1° Año</option>
+                    <option value="2do">2° Año</option>
+                    <option value="3ro">3° Año</option>
+                    <option value="4to">4° Año</option>
+                    <option value="5to">5° Año</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="seccion">Sección</label>
+                  <input type="text" id="seccion" name="seccion">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="email">Correo Electrónico</label>
+                  <input type="email" id="email" name="email">
+                </div>
+                <div class="form-field">
+                  <label for="residencia">Lugar de Residencia</label>
+                  <input type="text" id="residencia" name="residencia">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="sexo">Sexo</label>
+                  <select id="sexo" name="sexo">
+                    <option value="">Selecciona...</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="celular">Celular</label>
+                  <input type="tel" id="celular" name="celular">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="fechanac">Fecha de Nacimiento</label>
+                  <input type="date" id="fechanac" name="fechanac">
+                </div>
+                <div class="form-field">
+                  <label for="lugarnac">Lugar de Nacimiento</label>
+                  <input type="text" id="lugarnac" name="lugarnac">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="domicilio">Domicilio</label>
+                  <input type="text" id="domicilio" name="domicilio">
+                </div>
+                <div class="form-field">
+                  <label for="distrito">Distrito</label>
+                  <input type="text" id="distrito" name="distrito">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field">
+                  <label for="emergencia">En una Emergencia Acudir a:</label>
+                  <input type="text" id="emergencia" name="emergencia">
+                </div>
+                <div class="form-field">
+                  <label for="telefono">Teléfono Fijo</label>
+                  <input type="tel" id="telefono" name="telefono">
+                </div>
+              </div>
+            </div>
+            <!-- SECCIÓN 2: ASPECTO FAMILIAR -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">2</span>Aspecto Familiar</h2>
+              <div class="table-responsive subfamily-table">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Datos de los miembros de la familia</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Parentesco</th>
+                      <th>Apellidos y Nombres</th>
+                      <th>Edad</th>
+                      <th>Grado de Instrucción</th>
+                      <th>Ocupación</th>
+                      <th>Celular</th>
+                      <th>¿Viven? (SI/NO)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Padre</strong></td>
+                      <td><input type="text" name="fam_padre_nombre"></td>
+                      <td><input type="text" name="fam_padre_edad" style="max-width: 80px;"></td>
+                      <td><input type="text" name="fam_padre_instruccion"></td>
+                      <td><input type="text" name="fam_padre_ocupacion"></td>
+                      <td><input type="tel" name="fam_padre_celular"></td>
+                      <td><input type="text" name="fam_padre_viven"></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Madre</strong></td>
+                      <td><input type="text" name="fam_madre_nombre"></td>
+                      <td><input type="text" name="fam_madre_edad" style="max-width: 80px;"></td>
+                      <td><input type="text" name="fam_madre_instruccion"></td>
+                      <td><input type="text" name="fam_madre_ocupacion"></td>
+                      <td><input type="tel" name="fam_madre_celular"></td>
+                      <td><input type="text" name="fam_madre_viven"></td>
+                    </tr>
+                    <tr id="hermano_1">
+                      <td><strong>Herman@</strong></td>
+                      <td><input type="text" name="fam_hermano_1_nombre"></td>
+                      <td><input type="text" name="fam_hermano_1_edad" style="max-width: 80px;"></td>
+                      <td><input type="text" name="fam_hermano_1_instruccion"></td>
+                      <td><input type="text" name="fam_hermano_1_ocupacion"></td>
+                      <td><input type="tel" name="fam_hermano_1_celular"></td>
+                      <td><input type="text" name="fam_hermano_1_viven"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div style="margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <button type="button" onclick="agregarHermano()" style="background: linear-gradient(135deg, #1e4976, #1a3a5c); color: white; border: none; padding: 9px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(26,58,92,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">＋ Agregar Herman@</button>
+                  <button type="button" onclick="quitarUltimoHermano()" style="background: #ecf0f1; color: #e74c3c; border: 1px solid #e74c3c; padding: 9px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;" onmouseover="this.style.background='#fdecea'" onmouseout="this.style.background='#ecf0f1'">− Quitar último</button>
+                  <span id="contador_hermanos" style="font-size: 13px; color: #7f8c8d;">1 herman@ registrado</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">2.2. ¿Con quién vives?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="vives_ambospadres" name="vives_ambospadres" value="Si"><label for="vives_ambospadres">Ambos Padres</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_solomadre" name="vives_solomadre" value="Si"><label for="vives_solomadre">Solo Madre</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_solopadre" name="vives_solopadre" value="Si"><label for="vives_solopadre">Solo Padre</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_soloabuelos" name="vives_soloabuelos" value="Si"><label for="vives_soloabuelos">Solo Abuelos</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_hermanos" name="vives_hermanos" value="Si"><label for="vives_hermanos">Hermanos</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_madrastra" name="vives_madrastra" value="Si"><label for="vives_madrastra">Madre y Padrastro</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_padrastra" name="vives_padrastra" value="Si"><label for="vives_padrastra">Padre y Madrastra</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_tios" name="vives_tios" value="Si"><label for="vives_tios">Tíos y Abuela</label></div>
+                  <div class="option-box"><input type="checkbox" id="vives_otros" name="vives_otros" value="Si"><label for="vives_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">2.3. Las relaciones familiares en tu hogar son:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="relac_armoniosas" name="relaciones_familiares" value="Armoniosas"><label for="relac_armoniosas">Armoniosas</label></div>
+                  <div class="radio-option"><input type="radio" id="relac_regularmente" name="relaciones_familiares" value="Regularmente Armoniosas"><label for="relac_regularmente">Regularmente Armoniosas</label></div>
+                  <div class="radio-option"><input type="radio" id="relac_conflictivas" name="relaciones_familiares" value="Conflictivas"><label for="relac_conflictivas">Conflictivas</label></div>
+                  <div class="radio-option"><input type="radio" id="relac_violentas" name="relaciones_familiares" value="Violentas"><label for="relac_violentas">Violentas</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">2.4. ¿Qué problemas presenta el hogar?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="prob_violencia" name="prob_violencia" value="Si"><label for="prob_violencia">Violencia Familiar</label></div>
+                  <div class="option-box"><input type="checkbox" id="prob_comunicacion" name="prob_comunicacion" value="Si"><label for="prob_comunicacion">Escasa Comunicación</label></div>
+                  <div class="option-box"><input type="checkbox" id="prob_economicos" name="prob_economicos" value="Si"><label for="prob_economicos">Problemas Económicos</label></div>
+                  <div class="option-box"><input type="checkbox" id="prob_salud" name="prob_salud" value="Si"><label for="prob_salud">Problemas de Salud</label></div>
+                  <div class="option-box"><input type="checkbox" id="prob_otros" name="prob_otros" value="Si"><label for="prob_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">2.5. Generalmente la dificultad de comunicarte con tu familia es por:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="dif_falta_tiempo" name="dificultad_comunicacion" value="Falta de Tiempo"><label for="dif_falta_tiempo">Falta de Tiempo de Padres</label></div>
+                  <div class="radio-option"><input type="radio" id="dif_desinteres" name="dificultad_comunicacion" value="Desinterés"><label for="dif_desinteres">Desinterés</label></div>
+                  <div class="radio-option"><input type="radio" id="dif_temor" name="dificultad_comunicacion" value="Temor"><label for="dif_temor">Temor</label></div>
+                  <div class="radio-option"><input type="radio" id="dif_no_hay" name="dificultad_comunicacion" value="No Hay Dificultad"><label for="dif_no_hay">No Hay Dificultad</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">2.6. Cuando haces tus tareas ¿Quién te apoya?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="apoya_mama" name="apoya_mama" value="Si"><label for="apoya_mama">Mamá</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_papa" name="apoya_papa" value="Si"><label for="apoya_papa">Papá</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_hermanos" name="apoya_hermanos" value="Si"><label for="apoya_hermanos">Hermanos</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_abuelos" name="apoya_abuelos" value="Si"><label for="apoya_abuelos">Abuelos</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_solo" name="apoya_solo" value="Si"><label for="apoya_solo">Hago Solo mi Tarea</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_prof" name="apoya_prof" value="Si"><label for="apoya_prof">Profesor Particular</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_nadie" name="apoya_nadie" value="Si"><label for="apoya_nadie">No Tengo a Nadie</label></div>
+                  <div class="option-box"><input type="checkbox" id="apoya_tios" name="apoya_tios" value="Si"><label for="apoya_tios">Tíos</label></div>
+                </div>
+              </div>
+            </div>
+            <!-- SECCIÓN 3: ASPECTO LABORAL Y ECONOMICO -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">3</span>Aspecto Laboral y Económico</h2>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.1. ¿Tu papá trabaja?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="papa_trabaja_si" name="papa_trabaja" value="Si"><label for="papa_trabaja_si">Sí</label></div>
+                  <div class="radio-option"><input type="radio" id="papa_trabaja_no" name="papa_trabaja" value="No"><label for="papa_trabaja_no">No</label></div>
+                </div>
+              </div>
+              <div class="options-grid">
+                <div class="option-box"><input type="checkbox" id="papa_permanente" name="papa_permanente" value="Si"><label for="papa_permanente">Trabajo Permanente</label></div>
+                <div class="option-box"><input type="checkbox" id="papa_eventual" name="papa_eventual" value="Si"><label for="papa_eventual">Trabajo Eventual</label></div>
+                <div class="option-box"><input type="checkbox" id="papa_comerciante" name="papa_comerciante" value="Si"><label for="papa_comerciante">Comerciante</label></div>
+                <div class="option-box"><input type="checkbox" id="papa_chacra" name="papa_chacra" value="Si"><label for="papa_chacra">Trabaja en Chacra</label></div>
+              </div>
+              <div class="row">
+                <div class="form-field"><label for="papa_donde">¿Dónde trabaja tu papá?</label><input type="text" id="papa_donde" name="papa_donde"></div>
+                <div class="form-field"><label for="papa_que">¿En qué trabaja tu papá?</label><input type="text" id="papa_que" name="papa_que"></div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.2. ¿Tu mamá trabaja?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="mama_trabaja_si" name="mama_trabaja" value="Si"><label for="mama_trabaja_si">Sí</label></div>
+                  <div class="radio-option"><input type="radio" id="mama_trabaja_no" name="mama_trabaja" value="No"><label for="mama_trabaja_no">No</label></div>
+                </div>
+              </div>
+              <div class="options-grid">
+                <div class="option-box"><input type="checkbox" id="mama_permanente" name="mama_permanente" value="Si"><label for="mama_permanente">Trabajo Permanente</label></div>
+                <div class="option-box"><input type="checkbox" id="mama_eventual" name="mama_eventual" value="Si"><label for="mama_eventual">Trabajo Eventual</label></div>
+                <div class="option-box"><input type="checkbox" id="mama_comerciante" name="mama_comerciante" value="Si"><label for="mama_comerciante">Comerciante</label></div>
+                <div class="option-box"><input type="checkbox" id="mama_chacra" name="mama_chacra" value="Si"><label for="mama_chacra">Trabaja en Chacra</label></div>
+              </div>
+              <div class="row">
+                <div class="form-field"><label for="mama_donde">¿Dónde trabaja tu mamá?</label><input type="text" id="mama_donde" name="mama_donde"></div>
+                <div class="form-field"><label for="mama_que">¿En qué trabaja tu mamá?</label><input type="text" id="mama_que" name="mama_que"></div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.3. ¿Cuánto es el ingreso familiar mensual?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="ingreso_menos200" name="ingreso_familiar" value="Menos de 200"><label for="ingreso_menos200">Menos de 200</label></div>
+                  <div class="radio-option"><input type="radio" id="ingreso_200_400" name="ingreso_familiar" value="De 200 a 400"><label for="ingreso_200_400">De 200 a 400</label></div>
+                  <div class="radio-option"><input type="radio" id="ingreso_400_700" name="ingreso_familiar" value="De 400 a 700"><label for="ingreso_400_700">De 400 a 700</label></div>
+                  <div class="radio-option"><input type="radio" id="ingreso_700mas" name="ingreso_familiar" value="De 700 a Más"><label for="ingreso_700mas">De 700 a Más</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.4. ¿En qué priorizan sus ingresos tus padres?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="prioridad_alimentos" name="prioridad_alimentos" value="Si"><label for="prioridad_alimentos">Alimentos</label></div>
+                  <div class="option-box"><input type="checkbox" id="prioridad_educacion" name="prioridad_educacion" value="Si"><label for="prioridad_educacion">Educación</label></div>
+                  <div class="option-box"><input type="checkbox" id="prioridad_vestimenta" name="prioridad_vestimenta" value="Si"><label for="prioridad_vestimenta">Vestimenta</label></div>
+                  <div class="option-box"><input type="checkbox" id="prioridad_artefactos" name="prioridad_artefactos" value="Si"><label for="prioridad_artefactos">Artefactos</label></div>
+                  <div class="option-box"><input type="checkbox" id="prioridad_telecable" name="prioridad_telecable" value="Si"><label for="prioridad_telecable">Telecable</label></div>
+                  <div class="option-box"><input type="checkbox" id="prioridad_otros" name="prioridad_otros" value="Si"><label for="prioridad_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.5. Condición del estudiante. ¿Trabajas?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="estudiante_trabaja_si" name="estudiante_trabaja" value="Si"><label for="estudiante_trabaja_si">Sí</label></div>
+                  <div class="radio-option"><input type="radio" id="estudiante_trabaja_no" name="estudiante_trabaja" value="No"><label for="estudiante_trabaja_no">No</label></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-field"><label for="estudiante_lugar">Lugar de trabajo</label><input type="text" id="estudiante_lugar" name="estudiante_lugar"></div>
+                <div class="form-field"><label for="estudiante_ocupacion">Ocupación</label><input type="text" id="estudiante_ocupacion" name="estudiante_ocupacion"></div>
+                <div class="form-field"><label for="estudiante_horario">Horario</label><input type="text" id="estudiante_horario" name="estudiante_horario"></div>
+              </div>
+              <div class="form-field" style="margin-bottom: 0;">
+                <label for="estudiante_pagan">¿Cuánto te pagan?</label>
+                <input type="text" id="estudiante_pagan" name="estudiante_pagan">
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">3.6. ¿En qué gastas lo que te pagan?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="gasto_padres" name="gasto_padres" value="Si"><label for="gasto_padres">Le Doy a Mis Padres</label></div>
+                  <div class="option-box"><input type="checkbox" id="gasto_ropa" name="gasto_ropa" value="Si"><label for="gasto_ropa">Compro Mi Ropa</label></div>
+                  <div class="option-box"><input type="checkbox" id="gasto_diarios" name="gasto_diarios" value="Si"><label for="gasto_diarios">Gastos Diarios</label></div>
+                  <div class="option-box"><input type="checkbox" id="gasto_internet" name="gasto_internet" value="Si"><label for="gasto_internet">Para Internet</label></div>
+                  <div class="option-box"><input type="checkbox" id="gasto_recreacion" name="gasto_recreacion" value="Si"><label for="gasto_recreacion">Diversión y Recreación</label></div>
+                  <div class="option-box"><input type="checkbox" id="gasto_otros" name="gasto_otros" value="Si"><label for="gasto_otros">Otros</label></div>
+                </div>
+              </div>
+            </div>
+            <!-- SECCIÓN 4: ASPECTO VIVIENDA -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">4</span>Aspecto Vivienda</h2>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.1. Tu vivienda es:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="vivienda_propia" name="vivienda_tipo" value="Propia"><label for="vivienda_propia">Propia</label></div>
+                  <div class="radio-option"><input type="radio" id="vivienda_alquilada" name="vivienda_tipo" value="Alquilada"><label for="vivienda_alquilada">Alquilada</label></div>
+                  <div class="radio-option"><input type="radio" id="vivienda_alojados" name="vivienda_tipo" value="Alojados"><label for="vivienda_alojados">Alojados</label></div>
+                  <div class="radio-option"><input type="radio" id="vivienda_otros" name="vivienda_tipo" value="Otros"><label for="vivienda_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.2. Tu vivienda es de material:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="material_noble" name="material_vivienda" value="Noble"><label for="material_noble">Noble (Ladrillo)</label></div>
+                  <div class="radio-option"><input type="radio" id="material_madera" name="material_vivienda" value="Madera"><label for="material_madera">Madera</label></div>
+                  <div class="radio-option"><input type="radio" id="material_otros" name="material_vivienda" value="Otros"><label for="material_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.3. El piso de tu casa es de:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="piso_cemento" name="piso_tipo" value="Cemento"><label for="piso_cemento">Cemento</label></div>
+                  <div class="radio-option"><input type="radio" id="piso_madera" name="piso_tipo" value="Madera"><label for="piso_madera">Madera</label></div>
+                  <div class="radio-option"><input type="radio" id="piso_tierra" name="piso_tipo" value="Tierra"><label for="piso_tierra">Tierra</label></div>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="habitaciones">4.4. Número de habitaciones:</label>
+                <input type="text" id="habitaciones" name="habitaciones">
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.5. Tu vivienda cuenta con:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="vivienda_cocina" name="vivienda_cocina" value="Si"><label for="vivienda_cocina">Cocina</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_dormitorio" name="vivienda_dormitorio" value="Si"><label for="vivienda_dormitorio">Dormitorio(s)</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_comedor" name="vivienda_comedor" value="Si"><label for="vivienda_comedor">Comedor</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_sshh" name="vivienda_sshh" value="Si"><label for="vivienda_sshh">SSHH</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_biblioteca" name="vivienda_biblioteca" value="Si"><label for="vivienda_biblioteca">Biblioteca</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_patio" name="vivienda_patio" value="Si"><label for="vivienda_patio">Patio</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_sala" name="vivienda_sala" value="Si"><label for="vivienda_sala">Sala</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_jardines" name="vivienda_jardines" value="Si"><label for="vivienda_jardines">Jardines</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_uncuarto" name="vivienda_uncuarto" value="Si"><label for="vivienda_uncuarto">Solo Un Cuarto</label></div>
+                  <div class="option-box"><input type="checkbox" id="vivienda_letrina" name="vivienda_letrina" value="Si"><label for="vivienda_letrina">Letrina</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.6. Tu casa tiene servicio de:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="servicio_agua" name="servicio_agua" value="Si"><label for="servicio_agua">Agua</label></div>
+                  <div class="option-box"><input type="checkbox" id="servicio_luz" name="servicio_luz" value="Si"><label for="servicio_luz">Luz</label></div>
+                  <div class="option-box"><input type="checkbox" id="servicio_desague" name="servicio_desague" value="Si"><label for="servicio_desague">Desagüe</label></div>
+                  <div class="option-box"><input type="checkbox" id="servicio_telecable" name="servicio_telecable" value="Si"><label for="servicio_telecable">Telecable</label></div>
+                  <div class="option-box"><input type="checkbox" id="servicio_internet" name="servicio_internet" value="Si"><label for="servicio_internet">Internet</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.7. En tu casa tienes:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="tiene_computadora" name="tiene_computadora" value="Si"><label for="tiene_computadora">Computadora</label></div>
+                  <div class="option-box"><input type="checkbox" id="tiene_television" name="tiene_television" value="Si"><label for="tiene_television">Televisión</label></div>
+                  <div class="option-box"><input type="checkbox" id="tiene_refrigeradora" name="tiene_refrigeradora" value="Si"><label for="tiene_refrigeradora">Refrigeradora</label></div>
+                  <div class="option-box"><input type="checkbox" id="tiene_lavadora" name="tiene_lavadora" value="Si"><label for="tiene_lavadora">Lavadora</label></div>
+                  <div class="option-box"><input type="checkbox" id="tiene_cable" name="tiene_cable" value="Si"><label for="tiene_cable">Cable</label></div>
+                  <div class="option-box"><input type="checkbox" id="tiene_cocina" name="tiene_cocina" value="Si"><label for="tiene_cocina">Cocina</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.8. ¿A qué distancia se encuentra la IE desde tu casa?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="distancia_menos1" name="distancia_ie" value="Menos de 1 km"><label for="distancia_menos1">Menos de 1 km</label></div>
+                  <div class="radio-option"><input type="radio" id="distancia_2" name="distancia_ie" value="2 km"><label for="distancia_2">2 km</label></div>
+                  <div class="radio-option"><input type="radio" id="distancia_3" name="distancia_ie" value="3 km"><label for="distancia_3">3 km</label></div>
+                  <div class="radio-option"><input type="radio" id="distancia_4" name="distancia_ie" value="4 km"><label for="distancia_4">4 km</label></div>
+                  <div class="radio-option"><input type="radio" id="distancia_mas5" name="distancia_ie" value="Más de 5 km"><label for="distancia_mas5">Más de 5 km</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">4.9. ¿Cómo te trasladas de tu casa al colegio?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="transporte_caminando" name="transporte_ie" value="Caminando"><label for="transporte_caminando">Caminando</label></div>
+                  <div class="radio-option"><input type="radio" id="transporte_bicicleta" name="transporte_ie" value="Bicicleta"><label for="transporte_bicicleta">En Bicicleta</label></div>
+                  <div class="radio-option"><input type="radio" id="transporte_motolina" name="transporte_ie" value="Moto Lineal"><label for="transporte_motolina">En Moto Lineal</label></div>
+                  <div class="radio-option"><input type="radio" id="transporte_mototaxi" name="transporte_ie" value="Mototaxi"><label for="transporte_mototaxi">En Mototaxi</label></div>
+                  <div class="radio-option"><input type="radio" id="transporte_carro" name="transporte_ie" value="Carro"><label for="transporte_carro">En Carro</label></div>
+                </div>
+              </div>
+            </div>
+            <!-- SECCIÓN 5: ASPECTO DE SALUD -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">5</span>Aspecto de Salud</h2>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">5.1. Presenta dificultades físicas en la:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="dificultad_vision" name="dificultad_vision" value="Si"><label for="dificultad_vision">Visión</label></div>
+                  <div class="option-box"><input type="checkbox" id="dificultad_auditiva" name="dificultad_auditiva" value="Si"><label for="dificultad_auditiva">Auditiva</label></div>
+                  <div class="option-box"><input type="checkbox" id="dificultad_fisica" name="dificultad_fisica" value="Si"><label for="dificultad_fisica">Físico</label></div>
+                  <div class="option-box"><input type="checkbox" id="dificultad_cardiaca" name="dificultad_cardiaca" value="Si"><label for="dificultad_cardiaca">Cardíaca</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">5.2. Estás asegurado en:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="asegurado_essalud" name="asegurado_en" value="ESSALUD"><label for="asegurado_essalud">ESSALUD</label></div>
+                  <div class="radio-option"><input type="radio" id="asegurado_sis" name="asegurado_en" value="SIS"><label for="asegurado_sis">SIS</label></div>
+                  <div class="radio-option"><input type="radio" id="asegurado_no" name="asegurado_en" value="No estoy asegurado"><label for="asegurado_no">No estoy asegurado</label></div>
+                  <div class="radio-option"><input type="radio" id="asegurado_otros" name="asegurado_en" value="Otros"><label for="asegurado_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="enfermedad">5.3. ¿Sufres de alguna enfermedad que requiere tratamiento? Menciónalo:</label>
+                <textarea id="enfermedad" name="enfermedad" class="textarea-large"></textarea>
+              </div>
+            </div>
+            <!-- SECCIÓN 6: ASPECTO DE ALIMENTACIÓN -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">6</span>Aspecto de Alimentación</h2>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">6.1. Consumes al día:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="consume_desayuno" name="consume_desayuno" value="Si"><label for="consume_desayuno">Desayuno</label></div>
+                  <div class="option-box"><input type="checkbox" id="consume_refrigerio" name="consume_refrigerio" value="Si"><label for="consume_refrigerio">Refrigerio</label></div>
+                  <div class="option-box"><input type="checkbox" id="consume_almuerzo" name="consume_almuerzo" value="Si"><label for="consume_almuerzo">Almuerzo</label></div>
+                  <div class="option-box"><input type="checkbox" id="consume_cena" name="consume_cena" value="Si"><label for="consume_cena">Cena</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">6.2. Al colegio vas:</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="vacolegio_desayunado" name="vaacolegio" value="Habiendo tomado desayuno"><label for="vacolegio_desayunado">Habiendo tomado desayuno</label></div>
+                  <div class="radio-option"><input type="radio" id="vacolegio_sindesayuno" name="vaacolegio" value="Sin tomar desayuno"><label for="vacolegio_sindesayuno">Sin tomar desayuno</label></div>
+                  <div class="radio-option"><input type="radio" id="vacolegio_condinero" name="vaacolegio" value="Con dinero para comprar"><label for="vacolegio_condinero">Con dinero para comprar desayuno</label></div>
+                  <div class="radio-option"><input type="radio" id="vacolegio_condesayuno" name="vaacolegio" value="Llevando desayuno"><label for="vacolegio_condesayuno">Llevando mi desayuno</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">6.3. Prefieres gastar tu propina en:</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="propina_golosinas" name="propina_golosinas" value="Si"><label for="propina_golosinas">Golosinas</label></div>
+                  <div class="option-box"><input type="checkbox" id="propina_gaseosa" name="propina_gaseosa" value="Si"><label for="propina_gaseosa">Gaseosa</label></div>
+                  <div class="option-box"><input type="checkbox" id="propina_frutas" name="propina_frutas" value="Si"><label for="propina_frutas">Frutas</label></div>
+                  <div class="option-box"><input type="checkbox" id="propina_comida" name="propina_comida" value="Si"><label for="propina_comida">Comida Preparada</label></div>
+                  <div class="option-box"><input type="checkbox" id="propina_otros" name="propina_otros" value="Si"><label for="propina_otros">Otros</label></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">6.4. ¿Consumes productos de la localidad o la región?</label>
+                <div class="radio-group">
+                  <div class="radio-option"><input type="radio" id="productos_no" name="productos_localidad" value="No"><label for="productos_no">No</label></div>
+                  <div class="radio-option"><input type="radio" id="productos_si" name="productos_localidad" value="Si"><label for="productos_si">Sí</label></div>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="cuales_productos">¿Cuáles?</label>
+                <input type="text" id="cuales_productos" name="cuales_productos">
+              </div>
+              <div class="form-field">
+                <label for="por_que_no">Si es NO, diga porqué:</label>
+                <textarea id="por_que_no" name="por_que_no"></textarea>
+              </div>
+            </div>
+            <!-- SECCIÓN 7: ASPECTO ACADÉMICO -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">7</span>Aspecto Académico</h2>
+              <div class="table-responsive">
+                <table>
+                  <tbody>
+                    <tr><td style="font-weight: bold;">7.1. ¿Eres repitente?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="repitente_si" name="repitente" value="Si"><label for="repitente_si">Sí</label></div><div class="radio-option"><input type="radio" id="repitente_no" name="repitente" value="No"><label for="repitente_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.2. ¿Has elaborado tu horario de estudio en casa?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="horario_si" name="horario_estudio" value="Si"><label for="horario_si">Sí</label></div><div class="radio-option"><input type="radio" id="horario_no" name="horario_estudio" value="No"><label for="horario_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.3. ¿Cumples tus tareas?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="tareas_si" name="cumples_tareas" value="Si"><label for="tareas_si">Sí</label></div><div class="radio-option"><input type="radio" id="tareas_no" name="cumples_tareas" value="No"><label for="tareas_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.4. ¿Tienes un ambiente adecuado en casa para el estudio?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="ambiente_si" name="ambiente_estudio" value="Si"><label for="ambiente_si">Sí</label></div><div class="radio-option"><input type="radio" id="ambiente_no" name="ambiente_estudio" value="No"><label for="ambiente_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.5. ¿Elaboras esquema organizado de temas estudiados?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="esquema_si" name="esquema_temas" value="Si"><label for="esquema_si">Sí</label></div><div class="radio-option"><input type="radio" id="esquema_no" name="esquema_temas" value="No"><label for="esquema_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.6. ¿Te distraes con facilidad?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="distrae_si" name="distrae_facilidad" value="Si"><label for="distrae_si">Sí</label></div><div class="radio-option"><input type="radio" id="distrae_no" name="distrae_facilidad" value="No"><label for="distrae_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.7. ¿Te pones nervioso al dar examen?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="nervioso_si" name="nervioso_examen" value="Si"><label for="nervioso_si">Sí</label></div><div class="radio-option"><input type="radio" id="nervioso_no" name="nervioso_examen" value="No"><label for="nervioso_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.8. ¿Te olvidas fácilmente de lo que estudias?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="olvidas_si" name="olvidas_facilidad" value="Si"><label for="olvidas_si">Sí</label></div><div class="radio-option"><input type="radio" id="olvidas_no" name="olvidas_facilidad" value="No"><label for="olvidas_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.9. ¿Tienes miedo a expresarte frente a compañeros?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="miedo_si" name="miedo_expresarse" value="Si"><label for="miedo_si">Sí</label></div><div class="radio-option"><input type="radio" id="miedo_no" name="miedo_expresarse" value="No"><label for="miedo_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.10. ¿Te gusta salir a exponer tus trabajos?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="exponer_si" name="exponer_trabajos" value="Si"><label for="exponer_si">Sí</label></div><div class="radio-option"><input type="radio" id="exponer_no" name="exponer_trabajos" value="No"><label for="exponer_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.11. ¿Comprendes lo que lees?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="comprendes_lees_si" name="comprendes_lees" value="Si"><label for="comprendes_lees_si">Sí</label></div><div class="radio-option"><input type="radio" id="comprendes_lees_no" name="comprendes_lees" value="No"><label for="comprendes_lees_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.12. ¿Comprendes cuando escuchas en clase?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="comprendes_escuchas_si" name="comprendes_escuchas" value="Si"><label for="comprendes_escuchas_si">Sí</label></div><div class="radio-option"><input type="radio" id="comprendes_escuchas_no" name="comprendes_escuchas" value="No"><label for="comprendes_escuchas_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.13. ¿Tienes temor de preguntar dudas al profesor?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="temor_preg_si" name="temor_preguntar" value="Si"><label for="temor_preg_si">Sí</label></div><div class="radio-option"><input type="radio" id="temor_preg_no" name="temor_preguntar" value="No"><label for="temor_preg_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">7.14. ¿Tienes confianza en tus profesores?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="confianza_si" name="confianza_profesores" value="Si"><label for="confianza_si">Sí</label></div><div class="radio-option"><input type="radio" id="confianza_no" name="confianza_profesores" value="No"><label for="confianza_no">No</label></div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="row">
+                <div class="form-field"><label for="area_gusta">7.15. ¿Cuál es el área que más te gusta?</label><input type="text" id="area_gusta" name="area_gusta"></div>
+                <div class="form-field"><label for="area_nogusta">7.16. ¿Cuál es el área que menos te gusta?</label><input type="text" id="area_nogusta" name="area_nogusta"></div>
+              </div>
+            </div>
+            <!-- SECCIÓN 8: ASPECTO EMOCIONAL -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">8</span>Aspecto Emocional</h2>
+              <div class="table-responsive">
+                <table>
+                  <tbody>
+                    <tr><td style="font-weight: bold;">8.1. ¿Eres nervioso?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="nervioso_trait_si" name="eres_nervioso" value="Si"><label for="nervioso_trait_si">Sí</label></div><div class="radio-option"><input type="radio" id="nervioso_trait_no" name="eres_nervioso" value="No"><label for="nervioso_trait_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.2. ¿Eres tímido?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="timido_si" name="eres_timido" value="Si"><label for="timido_si">Sí</label></div><div class="radio-option"><input type="radio" id="timido_no" name="eres_timido" value="No"><label for="timido_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.3. ¿Sientes que nadie te quiere?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="nadie_quiere_si" name="nadie_te_quiere" value="Si"><label for="nadie_quiere_si">Sí</label></div><div class="radio-option"><input type="radio" id="nadie_quiere_no" name="nadie_te_quiere" value="No"><label for="nadie_quiere_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.4. ¿Tienes más de un amigo o amiga?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="amigos_si" name="mas_amigos" value="Si"><label for="amigos_si">Sí</label></div><div class="radio-option"><input type="radio" id="amigos_no" name="mas_amigos" value="No"><label for="amigos_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.5. ¿Te llaman la atención por interrumpir clases?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="llaman_atencion_si" name="llaman_atencion" value="Si"><label for="llaman_atencion_si">Sí</label></div><div class="radio-option"><input type="radio" id="llaman_atencion_no" name="llaman_atencion" value="No"><label for="llaman_atencion_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.6. ¿Obedeces instrucciones/indicaciones?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="obedeces_si" name="obedeces_instrucciones" value="Si"><label for="obedeces_si">Sí</label></div><div class="radio-option"><input type="radio" id="obedeces_no" name="obedeces_instrucciones" value="No"><label for="obedeces_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.7. ¿Te alteras con facilidad?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="alteras_si" name="alteras_facilidad" value="Si"><label for="alteras_si">Sí</label></div><div class="radio-option"><input type="radio" id="alteras_no" name="alteras_facilidad" value="No"><label for="alteras_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">8.8. ¿Tienes familiar que haya fallecido recientemente?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="fallecido_si" name="fallecido_recientemente" value="Si"><label for="fallecido_si">Sí</label></div><div class="radio-option"><input type="radio" id="fallecido_no" name="fallecido_recientemente" value="No"><label for="fallecido_no">No</label></div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- SECCIÓN 9: ASPECTO SOCIAL -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">9</span>Aspecto Social</h2>
+              <div class="table-responsive">
+                <table>
+                  <tbody>
+                    <tr><td style="font-weight: bold;">9.1. ¿Te evasdes del colegio cuando no te gusta la clase?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="evasion_si" name="evasion_colegio" value="Si"><label for="evasion_si">Sí</label></div><div class="radio-option"><input type="radio" id="evasion_no" name="evasion_colegio" value="No"><label for="evasion_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.2. ¿Pierdes control emocional cuando te agreden?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="control_emoc_si" name="control_emociones" value="Si"><label for="control_emoc_si">Sí</label></div><div class="radio-option"><input type="radio" id="control_emoc_no" name="control_emociones" value="No"><label for="control_emoc_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.3. ¿Consumiste algún estimulante por curiosidad?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="estimulante_si" name="estimulante_curiosidad" value="Si"><label for="estimulante_si">Sí</label></div><div class="radio-option"><input type="radio" id="estimulante_no" name="estimulante_curiosidad" value="No"><label for="estimulante_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.4. Si te invitan una copa de licor ¿tomas?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="licor_si" name="licor_invitan" value="Si"><label for="licor_si">Sí</label></div><div class="radio-option"><input type="radio" id="licor_no" name="licor_invitan" value="No"><label for="licor_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.5. ¿Das iniciativas y compartes conocimientos?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="iniciativas_si" name="das_iniciativas" value="Si"><label for="iniciativas_si">Sí</label></div><div class="radio-option"><input type="radio" id="iniciativas_no" name="das_iniciativas" value="No"><label for="iniciativas_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.6. ¿Te gusta dirigir el trabajo en equipo?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="dirigir_si" name="dirigir_trabajo" value="Si"><label for="dirigir_si">Sí</label></div><div class="radio-option"><input type="radio" id="dirigir_no" name="dirigir_trabajo" value="No"><label for="dirigir_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.7. ¿Te gusta internet porque entras a juegos?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="internet_juegos_si" name="internet_juegos" value="Si"><label for="internet_juegos_si">Sí</label></div><div class="radio-option"><input type="radio" id="internet_juegos_no" name="internet_juegos" value="No"><label for="internet_juegos_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">9.8. ¿Te gusta internet para bajar info de estudio?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="internet_estudio_si" name="internet_estudio" value="Si"><label for="internet_estudio_si">Sí</label></div><div class="radio-option"><input type="radio" id="internet_estudio_no" name="internet_estudio" value="No"><label for="internet_estudio_no">No</label></div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- SECCIÓN 10: ASPECTO PERSONAL -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">10</span>Aspecto Personal</h2>
+              <div class="table-responsive">
+                <table>
+                  <tbody>
+                    <tr><td style="font-weight: bold;">10.1. ¿Tus compañeros te brindan afecto y comprensión?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="afecto_compa_si" name="afecto_compañeros" value="Si"><label for="afecto_compa_si">Sí</label></div><div class="radio-option"><input type="radio" id="afecto_compa_no" name="afecto_compañeros" value="No"><label for="afecto_compa_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">10.2. ¿Has pensado en irte de casa?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="irte_casa_si" name="pensado_irte" value="Si"><label for="irte_casa_si">Sí</label></div><div class="radio-option"><input type="radio" id="irte_casa_no" name="pensado_irte" value="No"><label for="irte_casa_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">10.3. ¿En algún momento pensaste en quitarte la vida?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="suicida_si" name="pensamiento_suicida" value="Si"><label for="suicida_si">Sí</label></div><div class="radio-option"><input type="radio" id="suicida_no" name="pensamiento_suicida" value="No"><label for="suicida_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">10.4. ¿Te gustaría ser mejor que tus padres?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="mejor_padres_si" name="mejor_que_padres" value="Si"><label for="mejor_padres_si">Sí</label></div><div class="radio-option"><input type="radio" id="mejor_padres_no" name="mejor_que_padres" value="No"><label for="mejor_padres_no">No</label></div></div></td></tr>
+                    <tr><td style="font-weight: bold;">10.5. ¿Te interesa cuidar tu aspecto personal?</td><td><div class="radio-group"><div class="radio-option"><input type="radio" id="aspecto_si" name="cuidar_aspecto" value="Si"><label for="aspecto_si">Sí</label></div><div class="radio-option"><input type="radio" id="aspecto_no" name="cuidar_aspecto" value="No"><label for="aspecto_no">No</label></div></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-field">
+                <label for="problemas_comparten">10.6. Cuando tienes problemas los compartes con:</label>
+                <input type="text" id="problemas_comparten" name="problemas_comparten">
+              </div>
+              <div class="form-field">
+                <label for="carrera_profesional">10.7. ¿Qué carrera profesional te gustaría estudiar?</label>
+                <input type="text" id="carrera_profesional" name="carrera_profesional">
+              </div>
+              <div class="form-field">
+                <label for="valores_importantes">10.8. ¿Qué valores son más importantes para ti?</label>
+                <textarea id="valores_importantes" name="valores_importantes"></textarea>
+              </div>
+            </div>
+            <!-- SECCIÓN 11: TUS HABILIDADES -->
+            <div class="section">
+              <h2 class="section-title"><span class="section-counter">11</span>Tus Habilidades</h2>
+              <div class="form-field">
+                <label for="deportes_practicas">11.1. ¿Qué deportes practicas?</label>
+                <input type="text" id="deportes_practicas" name="deportes_practicas">
+              </div>
+              <div class="form-group">
+                <label style="width: 100%; font-weight: bold; margin-bottom: 15px; color: #2c3e50;">11.2. ¿En qué actividades participas?</label>
+                <div class="options-grid">
+                  <div class="option-box"><input type="checkbox" id="actividad_canto" name="actividad_canto" value="Si"><label for="actividad_canto">Canto</label></div>
+                  <div class="option-box"><input type="checkbox" id="actividad_declamacion" name="actividad_declamacion" value="Si"><label for="actividad_declamacion">Declamación</label></div>
+                  <div class="option-box"><input type="checkbox" id="actividad_teatro" name="actividad_teatro" value="Si"><label for="actividad_teatro">Teatro</label></div>
+                  <div class="option-box"><input type="checkbox" id="actividad_danza" name="actividad_danza" value="Si"><label for="actividad_danza">Danza</label></div>
+                  <div class="option-box"><input type="checkbox" id="actividad_pintura" name="actividad_pintura" value="Si"><label for="actividad_pintura">Pintura</label></div>
+                  <div class="option-box"><input type="checkbox" id="actividad_otro" name="actividad_otro" value="Si"><label for="actividad_otro">Otro</label></div>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="otra_actividad">Indique otra actividad:</label>
+                <input type="text" id="otra_actividad" name="otra_actividad">
+              </div>
+            </div>
+            <!-- BOTONES DE ACCIÓN -->
+            <div id="fichaDiagnosticaMsg" class="form-hint" style="text-align:center; min-height:18px;"></div>
+            <div class="buttons">
+              <button type="submit" class="btn-submit">✓ Guardar</button>
+              <button type="button" class="btn-export" onclick="descargarDocx()">⬇ Descargar Word</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalReporteAnonimo" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalReporteAnonimo')">
+    <div class="modal-box student-modal">
+      <div class="modal-header">
+        <h2>Enviar evidencia anónima</h2>
+        <button class="modal-close" onclick="cerrarModal('modalReporteAnonimo')">x</button>
+      </div>
+      <div class="modal-body">
+        <p class="student-modal-note">Tu identidad será protegida. Este reporte será revisado por el área psicopedagógica.</p>
+
+        <div class="form-group">
+          <label>Subir imagen o tomar foto</label>
+          <input type="file" id="fotoIncidenteFile" accept="image/*" capture="environment" onchange="previsualizarFoto(this)">
+        </div>
+
+        <div class="form-group">
+          <div class="camara-controles student-camera-actions">
+            <button class="btn btn-secondary" id="btnAbrirCamara" onclick="abrirCamara()">Activar cámara</button>
+            <button class="btn btn-primary oculto" id="btnCapturar" onclick="capturarFoto()">Capturar</button>
+            <button class="btn btn-danger oculto" id="btnDetenerCamara" onclick="detenerCamara()">Cancelar</button>
+          </div>
+          <video id="videoCamara" autoplay playsinline></video>
+          <canvas id="canvasCaptura" style="display:none;"></canvas>
+        </div>
+
+        <div id="previewFotoContainer" class="foto-preview-container oculto">
+          <p>Vista previa:</p>
+          <img id="previewFoto" src="" alt="Vista previa de evidencia">
+          <button class="btn btn-danger" onclick="limpiarFoto()">Quitar imagen</button>
+        </div>
+
+        <div class="form-group">
+          <label>Descripción breve de la situación</label>
+          <textarea id="descripcionIncidente" placeholder="Describe brevemente lo ocurrido..." style="min-height:120px;"></textarea>
+        </div>
+
+        <button class="student-primary-btn student-full-btn" onclick="reportarIncidente()">Enviar de forma anónima</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js?v=3"></script>
+  <script src="../js/core/utils.js?v=3"></script>
+  <script src="../js/core/api.js?v=3"></script>
+  <script src="../js/modulos/estudiante.js?v=4"></script>
+  <script src="../js/modulos/incidentes.js?v=3"></script>
+  <script src="../js/modulos/mensajes.js?v=3"></script>
+  <script src="../js/modulos/expediente.js?v=4"></script>
+  <script src="../js/modulos/ficha_diagnostica.js?v=5"></script>
+</body>
+</html>

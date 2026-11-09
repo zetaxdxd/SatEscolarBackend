@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAT Escolar | Detalle del estudiante</title>
+  <link rel="stylesheet" href="../css/theme-school.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Layout: sidebar fijo a la izquierda + contenido con margen (solo esta página) */
+    .teacher-layout { display: flex; min-height: 100vh; }
+    .teacher-layout .teacher-content {
+      margin-left: 275px;
+      width: calc(100% - 275px);
+      padding: 28px 34px;
+      overflow-x: hidden;
+    }
+    @media (max-width: 800px) {
+      .teacher-layout .teacher-content {
+        margin-left: 75px;
+        width: calc(100% - 75px);
+      }
+    }
+    @media (max-width: 768px) {
+      .teacher-layout .teacher-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px 14px;
+        padding-top: 66px;
+      }
+    }
+  </style>
+</head>
+
+<body onload="validarAcceso('psicologa'); cargarTema(); cargarDetalleEstudiante();">
+
+  <button id="btnTema" class="theme-icon" onclick="cambiarTema()" title="Cambiar tema"></button>
+
+  <div class="layout teacher-layout">
+
+    <aside class="app-sidebar">
+      <div class="sidebar-brand">
+        <img src="../assets/img/colegio/escudo-ofelia.png" alt="Escudo SAT" style="width:50px;height:55px;object-fit:contain;">
+        <div>
+          <h1>SAT Escolar</h1>
+          <span>SISTEMA DE ALERTA TEMPRANA</span>
+        </div>
+      </div>
+      <div class="user-card">
+        <div class="avatar-container">
+          <svg class="avatar-icon" viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="user-info">
+          <span class="greeting">Hola,</span>
+          <span class="name" id="sidebarUserName">Cargando...</span>
+          <span class="user-badge" id="sidebarUserRole">PSICOLOGO</span>
+        </div>
+      </div>
+      <div class="sidebar-menu-title">Panel</div>
+      <nav class="sidebar-nav" id="detMenu"><!-- Menú compartido: se genera desde PS_MENU en psicologia.js --></nav>
+            <div class="logout">
+        <button class="logout-btn" onclick="cerrarSesion()">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </div>
+          <span>Cerrar sesión</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="content teacher-content">
+
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="btn btn-secondary" onclick="window.location.href='psicologa.html'">← Volver</button>
+          <h1>Detalle del estudiante</h1>
+        </div>
+        <div class="topbar-icons">
+          <img src="../assets/img/avatar.png" alt="perfil">
+        </div>
+      </div>
+
+      <div id="detalleCargando" class="card" style="text-align:center;color:#888;padding:32px;">
+        Cargando información del estudiante...
+      </div>
+
+      <div id="detalleContenido" class="oculto">
+
+        <div class="card" style="margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+            <div>
+              <h2 id="detEstudianteNombre" style="margin:0 0 6px;">-</h2>
+              <p id="detEstudianteInfo" style="color:#64748b;margin:0;">-</p>
+            </div>
+            <div id="detSemaforoBox" style="text-align:center;min-width:160px;padding:14px 20px;border-radius:14px;">
+              <div id="detNivelTexto" style="font-size:1.6rem;font-weight:800;">-</div>
+              <div id="detPuntajeTexto" style="font-size:0.85rem;color:#64748b;">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="detLecturaBox" class="card oculto" style="margin-bottom:20px;border-left:4px solid #ccc;">
+          <div id="detLecturaInsignia" style="display:inline-block;font-size:12px;font-weight:800;letter-spacing:.5px;padding:5px 12px;border-radius:999px;margin-bottom:10px;"></div>
+          <p id="detLecturaTitular" style="margin:0 0 12px;font-size:15px;font-weight:700;color:#102a56;line-height:1.5;"></p>
+          <div id="detLecturaPorque" style="margin-bottom:12px;"></div>
+          <div id="detLecturaRasgos" style="margin-bottom:12px;"></div>
+          <div id="detLecturaContexto" style="margin-bottom:12px;"></div>
+          <div id="detLecturaRevisar"></div>
+        </div>
+
+        <div id="detMotivosBox" class="card" style="margin-bottom:20px;border-left:4px solid #ccc;">
+          <h3 style="margin:0 0 10px;">Observaciones del indicador</h3>
+          <ul id="detMotivosLista" style="margin:0;padding-left:18px;color:#475569;"></ul>
+        </div>
+
+        <div class="dashboard-grid" style="margin-bottom:20px;">
+          <div class="dashboard-card">
+            <h2>Academico</h2>
+            <div id="detAcademicoResumen">
+              <p style="color:#888;">Sin datos</p>
+            </div>
+          </div>
+          <div class="dashboard-card">
+            <h2>Asistencia</h2>
+            <div id="detAsistenciaResumen">
+              <p style="color:#888;">Sin datos</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin-bottom:16px;">Asistencia — ultimos 60 dias</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Observacion</th>
+              </tr>
+            </thead>
+            <tbody id="detTablaAsistencia">
+              <tr><td colspan="3" style="text-align:center;color:#888;padding:16px;">Sin registros.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 style="margin:0;">Incidencias</h2>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="cargarIncidenciasDetalle(Number(obtenerEstudianteIdDesdeUrl()))">Ver incidencias</button>
+              <button class="btn btn-primary btn-sm" onclick="abrirModalIncidencia(Number(obtenerEstudianteIdDesdeUrl()))">+ Nueva</button>
+            </div>
+          </div>
+          <div id="detIncidenciasLista" style="display:grid; gap:8px; min-height:60px;">
+            <div style="background:#f9fafb; border:1px dashed #d1d5db; border-radius:10px; padding:16px; text-align:center;">
+              <p style="color:#6b7280; font-size:13px; margin:0;">Pulsa Ver incidencias para ver el historial</p>
+              <p style="color:#9ca3af; font-size:11px; margin-top:4px;">Si no tiene, verás "Alumno sin incidencias"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px; border:1px solid #dbeafe; background:linear-gradient(180deg,#f8fbff,#fff);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 style="margin:0; color:#063b91;">Ficha Socioeducativa</h2>
+            <button id="btnVerFichaDetalle" class="btn btn-primary btn-sm" style="display:none;" onclick="verFichaSocioeducativa(Number(obtenerEstudianteIdDesdeUrl()))">Ver</button>
+          </div>
+          <div id="detFichaResumen" style="display:grid; gap:8px;">
+            <p style="color:#888; text-align:center; padding:12px;">Cargando ficha...</p>
+          </div>
+          <p style="font-size:11px; color:#9ca3af; margin:8px 0 0;">Si está llena, el botón <strong>Ver</strong> muestra todo el cuestionario (preguntas + respuestas, solo lectura) con opción de descargar Word.</p>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 style="margin:0;">Expediente</h2>
+            <button class="btn btn-primary btn-sm" onclick="abrirExpediente(Number(obtenerEstudianteIdDesdeUrl()), document.getElementById('detEstudianteNombre').textContent)">Ver expediente (pantalla completa)</button>
+          </div>
+          <div id="detExpedienteResumen" style="display:grid; gap:8px;">
+            <p style="color:#888; text-align:center; padding:12px;">Cargando expediente...</p>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="abrirModalNuevoFormato()">+ Nuevo formato</button>
+            <span style="font-size:11px; color:#9ca3af; align-self:center;">Se abre a pantalla completa, con 7 pestañas para crear expedientes ordenados</span>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/core/utils.js"></script>
+  <script src="../js/core/api.js"></script>
+  <script src="../js/modulos/psicologia.js?v=4"></script>
+  <script src="../js/modulos/expediente.js?v=4"></script>
+  <script src="../js/modulos/expediente_formatos.js?v=4"></script>
+  <script src="../js/modulos/ficha_diagnostica.js?v=5"></script>
+
+  <!-- MODAL FICHA SOCIOEDUCATIVA (solo lectura) — colores sistema SAT -->
+  <div id="modalFichaVista" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalFichaVista')">
+    <div class="modal-box" style="max-width:860px; width:calc(100vw - 32px); max-height:92vh; padding:0; overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e4976 0%,#1a3a5c 100%); border-radius:16px 16px 0 0;">
+        <div>
+          <h2 id="fichaVistaTitulo" style="font-size:15px; font-weight:800; color:white; margin:0;">Ficha Socioeducativa</h2>
+          <p style="font-size:11px; color:#cfe0ff; margin:2px 0 0;">Cuestionario completo · solo lectura · no editable</p>
+        </div>
+        <button class="modal-close" style="color:white;" onclick="cerrarModal('modalFichaVista')">&times;</button>
+      </div>
+      <div class="modal-body" id="fichaVistaBody" style="max-height:calc(92vh - 90px); overflow-y:auto; padding:16px 20px;"></div>
+    </div>
+  </div>
+  <script>
+    function obtenerEstudianteIdDesdeUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    function colorPorNombreSemaforo(color) {
+      const mapa = { verde: "#16a34a", amarillo: "#ca8a04", rojo: "#dc2626", gris: "#6b7280" };
+      return mapa[color] || "#6b7280";
+    }
+
+    function fondoPorNombreSemaforo(color) {
+      const mapa = { verde: "#ecfdf5", amarillo: "#fef9ec", rojo: "#fef2f2", gris: "#f3f4f6" };
+      return mapa[color] || "#f3f4f6";
+    }
+
+    async function cargarDetalleEstudiante() {
+      if (typeof cargarSidebarUsuario === "function") cargarSidebarUsuario();
+      if (typeof renderMenuDetalle === "function") renderMenuDetalle();
+      const estudianteId = obtenerEstudianteIdDesdeUrl();
+      const cargando = document.getElementById("detalleCargando");
+      const contenido = document.getElementById("detalleContenido");
+
+      if (!estudianteId) {
+        cargando.textContent = "No se especificó un estudiante. Vuelve al panel e inténtalo de nuevo.";
+        return;
+      }
+
+      localStorage.setItem('sat_estudiante_seguimiento', estudianteId);
+
+      try {
+        const data = await apiFetch(`/postgres/psicologia/estudiantes/${estudianteId}/detalle-completo`);
+        const e = data.estudiante;
+        const indicador = data.indicador;
+
+        document.getElementById("detEstudianteNombre").textContent = `${e.nombres} ${e.apellidos}`;
+        document.getElementById("detEstudianteInfo").textContent =
+          `${e.correo || "-"} · ${e.nivel} ${e.grado} ${e.letra}`;
+
+        if (indicador) {
+          const metricas = typeof indicador.metricas === "string" ? JSON.parse(indicador.metricas) : indicador.metricas;
+          const motivos = typeof indicador.motivos === "string" ? JSON.parse(indicador.motivos) : indicador.motivos;
+          const semaforo = metricas?.semaforo || {};
+          const color = semaforo.color || "gris";
+
+          const semaforoBox = document.getElementById("detSemaforoBox");
+          semaforoBox.style.background = fondoPorNombreSemaforo(color);
+          document.getElementById("detNivelTexto").textContent = indicador.nivel || "Sin datos";
+          document.getElementById("detNivelTexto").style.color = colorPorNombreSemaforo(color);
+          document.getElementById("detPuntajeTexto").textContent = indicador.datos_completos
+            ? `Puntaje global: ${indicador.puntaje_global}/100`
+            : "Datos incompletos";
+
+          document.getElementById("detMotivosBox").style.borderLeftColor = colorPorNombreSemaforo(color);
+          const lista = document.getElementById("detMotivosLista");
+          const motivosFiltrados = (motivos || []).filter(Boolean);
+          lista.innerHTML = motivosFiltrados.length
+            ? motivosFiltrados.map(m => `<li>${escaparHtml(String(m))}</li>`).join("")
+            : "<li>Sin observaciones registradas.</li>";
+
+          renderLecturaRiesgo(metricas?.lectura, color);
+
+          renderResumenDimensiones(metricas);
+        } else {
+          document.getElementById("detPuntajeTexto").textContent = "Sin indicador calculado todavía";
+          document.getElementById("detMotivosLista").innerHTML = "<li>Este estudiante no tiene un indicador de riesgo calculado. Pide que se ejecute el recálculo.</li>";
+        }
+
+        renderTablaAsistenciaDetalle(data.asistencia_detalle || []);
+        cargarIncidenciasDetalle(estudianteId);
+        cargarExpedienteResumen(estudianteId);
+        cargarFichaDetalle(estudianteId);
+
+        cargando.classList.add("oculto");
+        contenido.classList.remove("oculto");
+      } catch (error) {
+        cargando.textContent = "No se pudo cargar el detalle: " + error.message;
+      }
+    }
+
+    async function cargarIncidenciasDetalle(estudianteId) {
+      const cont = document.getElementById("detIncidenciasLista");
+      if (!cont) return;
+      cont.innerHTML = `<p style="color:#888; text-align:center; padding:12px;">Cargando incidencias...</p>`;
+      try {
+        const data = await apiFetch(`/postgres/estudiantes/${estudianteId}/historial`);
+        const incs = data.incidencias || [];
+        if (!incs.length) {
+          cont.innerHTML = `<div style="background:#f9fafb; border:1px dashed #d1d5db; border-radius:10px; padding:16px; text-align:center;"><p style="color:#6b7280; font-size:13px; margin:0;">Sin incidencias</p><p style="color:#9ca3af; font-size:11px; margin-top:4px;">Este estudiante no tiene incidencias registradas. Usa el botón + Nueva incidencia para registrar una.</p></div>`;
+          return;
+        }
+        cont.innerHTML = incs.map(i => `
+          <div style="border:1px solid #e5e7eb; border-radius:10px; padding:12px; background:white;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:11px; font-weight:700; color:#6b7280;">${String(i.fecha_incidencia).slice(0,10)} · ${i.tipo}</span>
+              <span style="font-size:10px; background:#f3f4f6; color:#6b7280; padding:2px 6px; border-radius:999px;">por ${i.rol_creador || "?"}</span>
+            </div>
+            <div style="font-size:13px; font-weight:600; color:#111827;">${i.descripcion}</div>
+            ${i.observacion ? `<div style="font-size:12px; color:#6b7280; margin-top:4px;">${i.observacion}</div>` : ""}
+          </div>
+        `).join("");
+      } catch (e) {
+        cont.innerHTML = `<p style="color:#b91c1c; text-align:center; padding:12px;">Error cargando incidencias: ${e.message}</p>`;
+      }
+    }
+
+    async function cargarFichaDetalle(estudianteId) {
+      const cont = document.getElementById("detFichaResumen");
+      const btn = document.getElementById("btnVerFichaDetalle");
+      if (!cont) return;
+      cont.innerHTML = `<p style="color:#888; text-align:center; padding:12px;">Cargando ficha...</p>`;
+      if (btn) btn.style.display = "none";
+      try {
+        const data = await apiFetch(`/postgres/ficha-diagnostica/${estudianteId}`);
+        if (!data.completada || !data.datos) {
+          cont.innerHTML = `<div style="background:#f9fafb; border:1px dashed #d1d5db; border-radius:10px; padding:16px; text-align:center;"><p style="color:#6b7280; font-size:13px; margin:0;">❌ Ficha socioeducativa <strong>no llenada</strong></p><p style="color:#9ca3af; font-size:11px; margin-top:4px;">El estudiante aún no completa su ficha obligatoria.</p></div>`;
+          return;
+        }
+        const nResp = data.datos ? Object.keys(data.datos).filter(k => data.datos[k] !== "" && data.datos[k] != null).length : 0;
+        const fecha = String(data.ficha?.updated_at || "").slice(0, 10);
+        cont.innerHTML = `<div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:12px;"><div style="font-size:13px; font-weight:700; color:#065f46;">✓ Ficha socioeducativa llenada</div><div style="font-size:11.5px; color:#047857; margin-top:2px;">Completada el ${fecha} · ${nResp} campos respondidos. Pulsa <strong>Ver</strong> para ver preguntas y respuestas.</div></div>`;
+        if (btn) btn.style.display = "";
+      } catch (e) {
+        cont.innerHTML = `<p style="color:#b91c1c; text-align:center; padding:12px;">Error: ${e.message}</p>`;
+      }
+    }
+
+    async function cargarExpedienteResumen(estudianteId) {
+      const cont = document.getElementById("detExpedienteResumen");
+      if (!cont) return;
+      cont.innerHTML = `<p style="color:#888; text-align:center; padding:12px;">Cargando expediente...</p>`;
+      try {
+        const data = await apiFetch(`/postgres/expediente/${estudianteId}/formatos`);
+        if (!data.length) {
+          cont.innerHTML = `<div style="background:#f9fafb; border:1px dashed #d1d5db; border-radius:10px; padding:16px; text-align:center;"><p style="color:#6b7280; font-size:13px; margin:0;">Sin expedientes</p><p style="color:#9ca3af; font-size:11px; margin-top:4px;">Este estudiante aún no tiene fichas. Usa el botón Ver expediente para crear la primera.</p></div>`;
+          return;
+        }
+        // Agrupar por tipo
+        const porTipo = {};
+        data.forEach(f => { porTipo[f.tipo] = (porTipo[f.tipo]||0)+1; });
+        const tipos = Object.entries(porTipo).map(([tipo, cant]) => `${tipo}: ${cant}`).join(" · ");
+        cont.innerHTML = `
+          <div style="background:#f0f7ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px;">
+            <div style="font-size:12px; font-weight:700; color:#1e3a5f;">${data.length} formatos</div>
+            <div style="font-size:11px; color:#6b7280; margin-top:2px;">${tipos}</div>
+            <div style="font-size:11px; color:#6b7280;">Último: #${data[0].correlativo} ${data[0].tipo} — ${String(data[0].fecha_registro).slice(0,10)}</div>
+          </div>
+        `;
+      } catch (e) {
+        cont.innerHTML = `<p style="color:#b91c1c; text-align:center; padding:12px;">Error: ${e.message}</p>`;
+      }
+    }
+
+    function renderLecturaRiesgo(lectura, color) {
+      const box = document.getElementById("detLecturaBox");
+      if (!box) return;
+      if (!lectura || (!lectura.porque?.length && !lectura.titular)) { box.classList.add("oculto"); return; }
+      box.classList.remove("oculto");
+      const col = colorPorNombreSemaforo(color);
+      box.style.borderLeftColor = col;
+      const fondo = { rojo: "#fdeceb", amarillo: "#fef3c7", verde: "#e3f7ee", gris: "#f3f4f6" }[color] || "#f3f4f6";
+      const txt = { rojo: "#b91c1c", amarillo: "#92400e", verde: "#166534", gris: "#4b5563" }[color] || "#4b5563";
+      const ins = document.getElementById("detLecturaInsignia");
+      ins.textContent = lectura.insignia || "";
+      ins.style.background = fondo; ins.style.color = txt;
+      document.getElementById("detLecturaTitular").textContent = lectura.titular || "";
+      const esc = s => escaparHtml(String(s ?? ""));
+      const bloque = (id, titulo, items, icono) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = (items && items.length)
+          ? `<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#063b91;margin-bottom:6px;">${titulo}</div>
+             <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;">` +
+            items.map(t => `<li style="display:flex;gap:8px;font-size:13px;color:#374151;line-height:1.5;"><span style="flex-shrink:0;">${icono}</span><span>${esc(t)}</span></li>`).join("") + `</ul>`
+          : "";
+      };
+      bloque("detLecturaPorque", "Por qué está en este nivel", lectura.porque, "📌");
+      bloque("detLecturaRasgos", "Rasgos detectados", lectura.rasgos, "🔎");
+      bloque("detLecturaContexto", "Contexto del estudiante", lectura.contexto, "🏠");
+      bloque("detLecturaRevisar", "Qué hacer ahora", lectura.revisar, "✅");
+    }
+
+    function renderResumenDimensiones(metricas) {
+      const academico = metricas?.academico || {};
+      const asistencia = metricas?.asistencia || {};
+
+      const academicoEl = document.getElementById("detAcademicoResumen");
+      if (academico.disponible) {
+        const d = academico.distribucion || {};
+        academicoEl.innerHTML = `
+          <div class="summary-item"><span>AD (Destacado):</span><strong>${d.AD?.cantidad ?? 0}</strong></div>
+          <div class="summary-item"><span>A (Esperado):</span><strong>${d.A?.cantidad ?? 0}</strong></div>
+          <div class="summary-item"><span>B (En proceso):</span><strong>${d.B?.cantidad ?? 0}</strong></div>
+          <div class="summary-item"><span>C (En inicio):</span><strong>${d.C?.cantidad ?? 0}</strong></div>
+          <div class="summary-item" style="margin-top:6px;border-top:1px solid #eee;padding-top:6px;">
+            <span>Tendencia:</span><strong>${academico.tendencia?.estado || "Sin datos"}</strong>
+          </div>`;
+      } else {
+        academicoEl.innerHTML = `<p style="color:#888;">${academico.detalle || "Sin calificativos registrados"}</p>`;
+      }
+
+      const asistenciaEl = document.getElementById("detAsistenciaResumen");
+      if (asistencia.disponible) {
+        asistenciaEl.innerHTML = `
+          <div class="summary-item"><span>Asistió:</span><strong>${asistencia.asistio} de ${asistencia.total} días</strong></div>
+          <div class="summary-item"><span>Tardanzas:</span><strong>${asistencia.tardanzas}</strong></div>
+          <div class="summary-item"><span>Faltas:</span><strong>${asistencia.faltas}</strong></div>
+          <div class="summary-item"><span>% asistencia efectiva:</span><strong>${asistencia.porcentaje_asistencia}%</strong></div>
+          ${asistencia.faltas_consecutivas_maximas >= 3 ? `<div class="summary-item" style="color:#dc2626;"><span>Faltas consecutivas:</span><strong>${asistencia.faltas_consecutivas_maximas}</strong></div>` : ""}`;
+      } else {
+        asistenciaEl.innerHTML = `<p style="color:#888;">${asistencia.detalle || "Sin asistencia registrada"}</p>`;
+      }
+    }
+
+    function renderTablaAsistenciaDetalle(registros) {
+      const tabla = document.getElementById("detTablaAsistencia");
+      if (registros.length === 0) {
+        tabla.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;padding:16px;">Sin registros.</td></tr>';
+        return;
+      }
+      const claseEstado = { "Asistió": "badge-bajo", "Tardanza": "badge-medio", "Faltó": "badge-alto" };
+      tabla.innerHTML = registros.map(r => `
+        <tr>
+          <td>${formatearFechaLarga(r.fecha)}</td>
+          <td><span class="badge ${claseEstado[r.estado] || ""}">${r.estado}</span></td>
+          <td>${r.observacion || "-"}</td>
+        </tr>`).join("");
+    }
+  </script>
+
+  <!-- MODAL INCIDENCIA -->
+  <div id="modalIncidencia" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalIncidencia')">
+    <div class="modal-box" style="max-width:560px;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Registrar incidencia</h2>
+        <button class="modal-close" onclick="cerrarModal('modalIncidencia')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:16px 20px;">
+        <div style="display:grid; gap:10px;">
+          <div class="form-group" style="position:relative;">
+            <label>Estudiante *</label>
+            <input id="incBuscarEstudiante" type="text" placeholder="Escribe nombre y apellidos..." autocomplete="off" oninput="onIncBuscarInput(this.value)" onfocus="onIncBuscarFocus()" onblur="setTimeout(()=>{const s=document.getElementById('incSugerencias'); if(s) s.style.display='none'}, 200)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;">
+            <input type="hidden" id="incEstudianteIdHidden">
+            <div id="incSugerencias" style="position:absolute; top:62px; left:0; right:0; background:white; border:1px solid #d1d5db; border-radius:8px; max-height:160px; overflow-y:auto; display:none; z-index:10; box-shadow:0 8px 16px rgba(0,0,0,0.08);"></div>
+            <select id="incEstudianteId" style="display:none;"><option value="">Seleccionar</option></select>
+          </div>
+          <div class="form-group"><label>Sección (auto)</label><select id="incSeccionId" onchange="cargarEstudiantesIncidencia(this.value)" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px; background:#f9fafb;"><option value="">Se asigna al elegir estudiante</option></select></div>
+          <div class="form-group"><label>Tipo *</label><select id="incTipo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="">Seleccionar</option><option value="tardanza_reiterada">Tardanza reiterada</option><option value="falta_injustificada">Falta injustificada</option><option value="agresion">Agresión</option><option value="vandalismo">Vandalismo</option><option value="consumo_sospecha">Consumo sospecha</option><option value="desinteres">Desinterés</option><option value="otro">Otro</option></select></div>
+          <div class="form-group"><label>Descripción *</label><input id="incDescripcion" type="text" placeholder="Ej: Pelea en recreo" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></div>
+          <div class="form-group"><label>Observación</label><textarea id="incObservacion" rows="2" placeholder="Detalle, contexto, testigos..." style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></textarea></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group"><label>Derivar a (opcional)</label><select id="incDerivarA" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"><option value="">Sin derivación</option><option value="psicologo">Psicólogo</option><option value="tutor">Tutor</option><option value="direccion">Dirección</option></select></div>
+            <div class="form-group"><label>Informe derivación</label><input id="incMotivoDerivacion" type="text" placeholder="Motivo breve" style="width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px; font-size:13px;"></div>
+          </div>
+        </div>
+        <div id="incMsg" style="margin-top:10px; font-size:12.5px;"></div>
+        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; border-top:1px solid #e5e7eb; padding-top:12px;">
+          <button class="btn btn-secondary" onclick="cerrarModal('modalIncidencia')">Cancelar</button>
+          <button class="btn btn-primary" onclick="crearIncidencia()">Guardar incidencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER FORMATO (solo lectura, espejo del documento) -->
+  <div id="modalVerFormato" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalVerFormato')">
+    <div class="modal-box" style="max-width:860px; width:calc(100vw - 32px); max-height:92vh; padding:0; overflow:hidden;">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e4976 0%,#1a3a5c 100%); border-radius:16px 16px 0 0;">
+        <div>
+          <h2 id="verFormatoTitulo" style="font-size:15px; font-weight:800; color:white; margin:0;">Documento</h2>
+          <p style="font-size:11px; color:#cfe0ff; margin:2px 0 0;">Solo lectura · no editable</p>
+        </div>
+        <button class="modal-close" style="color:white;" onclick="cerrarModal('modalVerFormato')">&times;</button>
+      </div>
+      <div class="modal-body" id="verFormatoBody" style="max-height:calc(92vh - 90px); overflow-y:auto; padding:16px 20px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL EXPEDIENTE -->
+  <div id="modalExpediente" class="modal-overlay oculto" onclick="cerrarModalSiFondo(event, 'modalExpediente')">
+    <div class="modal-box" style="max-width:720px; max-height:90vh;">
+      <div class="modal-header">
+        <h2 style="font-size:16px; font-weight:800; color:#102a56; margin:0;">Expediente — <span id="expedienteEstudianteNombre">Estudiante</span></h2>
+        <button class="modal-close" onclick="cerrarModal('modalExpediente')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:16px 20px; max-height:calc(90vh - 70px); overflow-y:auto;">
+        <div id="expedienteTabs" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;"></div>
+        <div id="expedienteLista"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
